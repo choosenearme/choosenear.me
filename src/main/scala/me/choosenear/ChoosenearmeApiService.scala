@@ -20,7 +20,7 @@ class ChoosenearmeApiService(donorsChoose: DonorsChooseApi, foursquare: Foursqua
         val latlng = request.params.required[LatLng]("latlng")
         val resultFuture = donorsChoose.near(latlng)
         resultFuture map { result =>
-          new RestApiResponse(JObject(List(JField("proposals", decompose(result)))))
+          new RestApiResponse(JObject(List(JField("proposals", result))))
         }
       case "foursquare" :: Nil =>
         val secret = request.params.required[String]("secret")
