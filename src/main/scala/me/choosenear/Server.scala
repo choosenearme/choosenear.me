@@ -5,10 +5,9 @@ import java.net.InetSocketAddress
 
 object Server {
   def main(args: Array[String]): Unit = {
-
-    val transform = new RestApiFilter
-    val api = new ApiService(new DonorsChooseApi())
-    val service = transform andThen api
+    val restFilter = new RestApiFilter
+    val api = new ChoosenearmeApiService(new DonorsChooseApi())
+    val service = restFilter andThen api
 
     val server = 
       (ServerBuilder()

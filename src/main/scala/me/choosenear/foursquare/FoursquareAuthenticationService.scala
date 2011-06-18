@@ -11,7 +11,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.{BAD_REQUEST, FOUND
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi) extends Service[HttpRequest, HttpResponse] {
+class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, userDb: UserDb) extends Service[HttpRequest, HttpResponse] {
   override def apply(_request: HttpRequest) = {
     val request = new RestApiRequest(_request)
 
@@ -30,8 +30,9 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi) exte
         Future.value(response)
       case "auth" :: "callback" :: Nil =>
         val code = request.params.required[String]("code")
-        authApi.auth(code) map { accessToken =>
-          
+        authApi.auth(code) flatMap { accessToken =>
+          User.createRecord.foursquareAccessToken(accessToken)
+          Future.value(())
         }
         error("TODO")
       case _ =>
