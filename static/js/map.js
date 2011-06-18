@@ -48,26 +48,29 @@ $(function(){
 
       function getInfoWindow(){
         infoWindow.close();
+        infoWindow.setContent("");
         return infoWindow;
       }
       
       function addMarkerClickEvent(marker, proposal){
        google.maps.event.addListener(marker, 'click', function() {
                var infoWindow = getInfoWindow();
-               var content = "<a class='proposal-link'>"+proposal.title +"</a>";
+               var content = "<a class='proposal-link' onclick=''>"+proposal.title +"</a>";
                infoWindow.setContent(content);
                infoWindow.open(map, marker);
+               $(".proposal-link").click(proposalClickLinkHandler);
        });
       }
       
-      $(".proposal-link").live("click",function(){
+      function proposalClickLinkHandler(event){
+          event.preventDefault();
           var link = $(this);
           var currentProposal = window.proposals.filter(function(proposal){
             return proposal.title == link.html(); 
             });
           $.mobile.changePage("more-information");
           $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
-        });
+        }
       google.maps.event.addListener(map,'tilesloaded',scrollToMap);
 
       function scrollToMap(){

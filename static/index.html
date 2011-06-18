@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="robots" content="all" /> 
+    <link rel="icon" type="image/png" href="favicon.png" />
 
     <title>choosenear.me</title>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css" />
@@ -33,9 +35,7 @@
       </div> 
       <div  data-role="content">
         <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
-          <li><a href="#">Auth with foursquare</a></li>
-          <li><a href="#">Sign into choosenear.me</a></li>
-          <li><a href="#map">Show Map</a></li>
+          <li><a href="#map">Find DonorsChoose schools nearby</a></li>
         </ul> 
       </div> 
     </div> 
@@ -55,13 +55,9 @@
       <div  data-role="header">
         <h1><a href="/"><img src="https://choosenear.me/choosenearme-logo.png"></a></h1>
       </div> 
-      <div  data-role="content" >
-        <div id="proposal-info">
-        </div>
+      <div  data-role="content" id="proposal-info">
       </div> 
     </div> 
-
-
 
     <script id="more-information-template" type="text/x-jquery-tmpl">
       <h1>${title}</h2>
