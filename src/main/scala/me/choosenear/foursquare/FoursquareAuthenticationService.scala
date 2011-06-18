@@ -11,7 +11,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.{BAD_REQUEST, FOUND
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, userDb: UserDb) extends Service[HttpRequest, HttpResponse] {
+class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqApi: FoursquareApi, userDb: UserDb) extends Service[HttpRequest, HttpResponse] {
+  def redirectTo(uri: String): HttpResponse = {
+    val response = new DefaultHttpResponse(HTTP_1_1, FOUND)
+    response.addHeader("Location", uri)
+    response
+  }
+
   override def apply(_request: HttpRequest) = {
     val request = new RestApiRequest(_request)
 
@@ -24,17 +30,24 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, user
           encoder.addParam("redirect_uri", authApi.RedirectUri)
           encoder.toString
         }
-
-        val response = new DefaultHttpResponse(HTTP_1_1, FOUND)
-        response.addHeader("Location", uri)
-        Future.value(response)
+        Future.value(redirectTo(uri))
       case "auth" :: "callback" :: Nil =>
         val code = request.params.required[String]("code")
-        authApi.auth(code) flatMap { accessToken =>
-          User.createRecord.foursquareAccessToken(accessToken)
-          Future.value(())
+        for {
+          accessToken <- authApi.auth(code)
+          userInfo <- fsqApi.authenticate(accessToken).self
+          val _user =
+            (User.createRecord
+                 .foursquareId(userInfo.response.user.id)
+                 .foursquareToken(accessToken)
+                 .firstName(userInfo.response.user.firstName)
+                 .lastName(userInfo.response.user.lastName)
+                 .email(userInfo.response.user.contact.email)
+                 .phone(userInfo.response.user.contact.phone))
+          user <- userDb.save(_user)
+        } yield {
+          redirectTo("/?secret=" + user.secret.value)
         }
-        error("TODO")
       case _ =>
         error("TODO")
     }

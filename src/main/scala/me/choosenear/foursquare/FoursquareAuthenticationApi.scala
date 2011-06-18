@@ -5,7 +5,9 @@ import net.liftweb.json.JsonAST.{JObject, JField, JString}
 
 class FoursquareAuthenticationApi(val RedirectUri: String,
                                   val ClientId: String,
-                                  ClientSecret: String) extends JsonApiClient("foursquare.com") {
+                                  ClientSecret: String) extends JsonApiClient("foursquare.com", 443) {
+  override def clientBuilder = super.clientBuilder.tls
+
   def auth(code: String): Future[String] = {
     val endpoint = "/oauth2/access_token"
     val params =

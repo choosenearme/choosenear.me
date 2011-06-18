@@ -11,9 +11,15 @@ import org.jboss.netty.util.CharsetUtil.UTF_8
 
 class RestApiFilter extends HttpFilter[RestApiRequest, RestApiResponse] {
   override def apply(request: HttpRequest, service: Service[RestApiRequest, RestApiResponse]): Future[HttpResponse] = {
-    service(new RestApiRequest(request)) map { apiResponse =>
+    val apiRequest = new RestApiRequest(request)
+    service(apiRequest) map { apiResponse =>
+      val callback: Option[String] = apiRequest.params.optional[String]("callback")
+
+      val body = Printer.pretty(JsonAST.render(apiResponse.json)) + "\n"
+      val wrappedBody = callback.map(cb => cb + "(" + body + ")").getOrElse(body)
+
       val response = new DefaultHttpResponse(HTTP_1_1, OK)
-      response.setContent(copiedBuffer(Printer.pretty(JsonAST.render(apiResponse.json)) + "\n", UTF_8))
+      response.setContent(copiedBuffer(wrappedBody, UTF_8))
       response
     } handle { case RestApiException(msg, status) =>
       val response = new DefaultHttpResponse(HTTP_1_1, status)
