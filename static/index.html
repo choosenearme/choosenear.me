@@ -10,23 +10,12 @@
 
     <title>choosenear.me</title>
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
     <script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js"></script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" src="https://raw.github.com/jquery/jquery-tmpl/master/jquery.tmpl.min.js"></script>
-    <style>
-      .ui-bar-b.ui-header{background:url(https://choosenear.me/background.gif);}
-      .ui-title{margin:0px !important;}
-      .min-width-320px h1 img{width:180px;}
-      .min-width-480px h1 img{width:200px;}
-      .min-width-1024px h1 img{width:auto;}
-      .min-width-320px #map-canvas-container{width:300px;height:500px;}
-      .min-width-480px #map-canvas-container{width:450px;height:500px;}
-      .min-width-1024px #map-canvas-container{width:900px;height:500px;margin:auto;}
-      .proposal-link{color:blue;text-decoration:underline;cursor:pointer;}
-      .proposal-link:hover{color:blue;}
-    </style>
   </head>
   <body>
     <div data-role="page" data-theme="b" id="original"> 
@@ -45,7 +34,7 @@
         <h1><a href="/"><img src="https://choosenear.me/choosenearme-logo.png"></a></h1>
       </div> 
       <div  data-role="content" >
-        <div id="map-canvas-container">
+        <div id="map-canvas-container" class="box_round">
           <div id="map_canvas" style="width: 100%; height: 100%"></div>
         </div>
       </div> 
