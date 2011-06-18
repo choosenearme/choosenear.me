@@ -7,8 +7,8 @@ $(function(){
 
   function setPosition(position) 
   {
-     var latitude = position.coords.latitude;
-     var longitude = position.coords.longitude;
+      var latitude = position.coords.latitude;
+      var longitude = position.coords.longitude;
       var myLatlng = new google.maps.LatLng(latitude, longitude);
       var myOptions = {
           zoom: 12,
@@ -29,6 +29,7 @@ $(function(){
     }); 
 
     var markerImage = new google.maps.MarkerImage("https://choosenear.me/marker.png")
+      var infoWindow = new google.maps.InfoWindow();
       window.handleDonorsChooseData = function(data){
         var proposals = data.proposals.proposals;
         for(var i = 0, len = proposals.length;i<len;i++){
@@ -45,7 +46,8 @@ $(function(){
       }
 
       function getInfoWindow(){
-        return new google.maps.InfoWindow();
+        infoWindow.close();
+        return infoWindow;
       }
       
       function addMarkerClickEvent(marker, proposal){
