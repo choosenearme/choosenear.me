@@ -12,4 +12,3 @@ class RestApiRequest(val request: HttpRequest) {
     (_path, new RestApiParameters(_params))
   }
 }
-
