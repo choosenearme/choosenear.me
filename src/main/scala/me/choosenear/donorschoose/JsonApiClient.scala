@@ -10,12 +10,13 @@ import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
 class JsonApiClient(host: String, port: Int = 80) {
-  val client =
+  def clientBuilder =
     (ClientBuilder()
       .codec(Http)
       .hosts(host + ":" + port)
-      .hostConnectionLimit(10)
-      .build())
+      .hostConnectionLimit(10))
+
+  val client = clientBuilder.build()
 
   def call(endpoint: String, params: Map[String, String]): Future[JValue] = {
     val uri = {
@@ -30,6 +31,8 @@ class JsonApiClient(host: String, port: Int = 80) {
     request.addHeader("Host", host)
     client(request) map { response =>
       val content = response.getContent.toString(UTF_8)
+      // println("API call to "+host+":"+port+uri+" gives response:\n\n"+content+"\n\n")
+      // println(response)
       JsonParser.parse(content)
     }
   }
