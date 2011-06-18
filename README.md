@@ -1,4 +1,5 @@
-![choosenear.me](https://choosenear.me/choosenearme.png)
+![choosenear.me marker](https://choosenear.me/choosenearme-marker.png)
+# choosenear.me
 
 - Jorge Ortiz @jorgeortiz85
 - John Paul @johnkpaul
