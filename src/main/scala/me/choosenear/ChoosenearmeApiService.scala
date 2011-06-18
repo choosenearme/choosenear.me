@@ -11,7 +11,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.OK
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class ApiService(donorsChoose: DonorsChooseApi) extends Service[RestApiRequest, RestApiResponse] {
+class ChoosenearmeApiService(donorsChoose: DonorsChooseApi) extends Service[RestApiRequest, RestApiResponse] {
   implicit val formats = DefaultFormats
 
   override def apply(request: RestApiRequest) = {

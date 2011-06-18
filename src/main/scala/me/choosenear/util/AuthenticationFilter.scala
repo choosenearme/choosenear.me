@@ -18,4 +18,3 @@ class AuthenticationFilter(authService: Service[HttpRequest, HttpResponse]) exte
       service(request)
   }
 }
-
