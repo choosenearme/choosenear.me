@@ -9,7 +9,7 @@ import org.jboss.netty.handler.codec.http.HttpMethod.GET
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class RestJsonApi(host: String, port: Int = 80) {
+class JsonApiClient(host: String, port: Int = 80) {
   val client =
     (ClientBuilder()
       .codec(Http)

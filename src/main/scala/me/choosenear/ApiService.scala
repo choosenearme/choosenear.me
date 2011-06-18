@@ -8,10 +8,12 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.OK
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class ApiService extends Service[RichHttpRequest, HttpResponse] {
-  override def apply(request: RichHttpRequest) = {
+class ApiService(donorsChoose: DonorsChooseApi) extends Service[RestApiRequest, HttpResponse] {
+  override def apply(request: RestApiRequest) = {
     request.path match {
       case "location" :: Nil =>
+        val latlng = request.params.required[LatLng]("latlng")
+        val proposals = donorsChoose.near(latlng)
       case _ =>
     }
     val response = new DefaultHttpResponse(HTTP_1_1, OK)

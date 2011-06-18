@@ -1,0 +1,18 @@
+package me.choosenear
+
+trait Parser[T] {
+  def apply(x: String): Option[T]
+  def unapply(x: String): Option[T] = apply(x)
+}
+
+object Parser {
+  implicit object DoubleParser extends Parser[Double] {
+    override def apply(x: String): Option[Double] = {
+      try {
+        Some(x.toDouble)
+      } catch {
+        case ex: NumberFormatException => None
+      }
+    }
+  }
+}

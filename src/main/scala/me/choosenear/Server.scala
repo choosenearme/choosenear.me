@@ -6,8 +6,8 @@ import java.net.InetSocketAddress
 object Server {
   def main(args: Array[String]): Unit = {
 
-    val transform = new RichHttpRequestFilter
-    val api = new ApiService
+    val transform = new RestApiFilter
+    val api = new ApiService(new DonorsChooseApi())
     val service = transform andThen api
 
     val server = 

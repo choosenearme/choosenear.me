@@ -17,12 +17,12 @@ case class DonorsChooseProposal(id: String,
                                 longitude: String,
                                 expirationDate: Date)
 
-class DonorsChooseApi(ApiKey: String = "DONORSCHOOSE") extends RestJsonApi("api.donorschoose.org") {
+class DonorsChooseApi(ApiKey: String = "DONORSCHOOSE") extends JsonApiClient("api.donorschoose.org") {
   implicit val formats = new net.liftweb.json.DefaultFormats {
     override protected def dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
   }
 
-  def near(geo: LatLong) = {
+  def near(geo: LatLng) = {
     val endpoint = "/common/json_feed.html"
     val params =
       Map(
