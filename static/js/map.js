@@ -1,10 +1,11 @@
 
 $(function(){
-  if(navigator.geolocation) 
-  {   
-     navigator.geolocation.getCurrentPosition(setPosition);
-  }
-
+  $("#map").live("pagecreate", function(event){
+      if(navigator.geolocation) 
+      {   
+         navigator.geolocation.getCurrentPosition(setPosition);
+      }
+    });
   function setPosition(position) 
   {
       var latitude = position.coords.latitude;
@@ -26,12 +27,12 @@ $(function(){
      $.ajax({
       url: "/js/exampleJSONP?callback=getDonorsChooseData",
       dataType: 'jsonp',
-    }); 
+     }); 
 
-    var markerImage = new google.maps.MarkerImage("https://choosenear.me/marker.png")
+      var markerImage = new google.maps.MarkerImage("https://choosenear.me/marker.png")
       var infoWindow = new google.maps.InfoWindow();
       window.handleDonorsChooseData = function(data){
-        var proposals = data.proposals.proposals;
+        var proposals = window.proposals = data.proposals.proposals;
         for(var i = 0, len = proposals.length;i<len;i++){
           var proposal = proposals[i];
           var proposalLatLng = new google.maps.LatLng(parseFloat(proposal.latitude, 10), parseFloat(proposal.longitude, 10));
@@ -53,9 +54,24 @@ $(function(){
       function addMarkerClickEvent(marker, proposal){
        google.maps.event.addListener(marker, 'click', function() {
                var infoWindow = getInfoWindow();
-               infoWindow.setContent(proposal.title);
+               var content = "<a class='proposal-link'>"+proposal.title +"</a>";
+               infoWindow.setContent(content);
                infoWindow.open(map, marker);
        });
+      }
+      
+      $(".proposal-link").live("click",function(){
+          var link = $(this);
+          var currentProposal = window.proposals.filter(function(proposal){
+            return proposal.title == link.html(); 
+            });
+          $.mobile.changePage("more-information");
+          $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
+        });
+      google.maps.event.addListener(map,'tilesloaded',scrollToMap);
+
+      function scrollToMap(){
+        $.mobile.silentScroll($("#map-canvas-container").position().top);
       }
   } 
 });
