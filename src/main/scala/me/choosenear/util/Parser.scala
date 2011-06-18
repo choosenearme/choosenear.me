@@ -6,6 +6,10 @@ trait Parser[T] {
 }
 
 object Parser {
+  implicit object StringParser extends Parser[String] {
+    override def apply(x: String): Option[String] = Some(x)
+  }
+
   implicit object DoubleParser extends Parser[Double] {
     override def apply(x: String): Option[Double] = {
       try {
