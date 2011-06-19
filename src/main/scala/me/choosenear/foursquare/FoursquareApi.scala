@@ -7,10 +7,12 @@ case class SelfApiResponseBody(user: UserApiResponse)
 case class UserApiResponse(id: String, firstName: String, lastName: String, contact: UserContactResponse)
 case class UserContactResponse(phone: String, email: String, twitter: String, facebook: String)
 
-// case class CheckinsHistoryRespons(response: CheckinsHistoryResponseBody)
-// case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
-// case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
-// case class CheckinDetail(venue: VenueDetail, createdAt: Long)
+case class CheckinsHistoryResponse(response: CheckinsHistoryResponseBody)
+case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
+case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
+case class CheckinDetail(createdAt: Long, venue: VenueDetail)
+case class VenueDetail(name: String, shout: Option[String], location: VenueLocation)
+case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
 class FoursquareApi(val ClientId: String, ClientSecret: String) {
   def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(ClientId, ClientSecret, accessToken)
@@ -28,5 +30,13 @@ class AuthenticatedFoursquareApi(val ClientId: String, ClientSecret: String, Acc
       Map(
         "oauth_token" -> AccessToken)
     call(endpoint, params).map(_.extract[SelfApiResponse])
+  }
+
+  def checkins = {
+    val endpoint = "/v2/users/self/checkins"
+    val params =
+      Map(
+        "oauth_token" -> AccessToken)
+      call(endpoint, params).map(_.extract[CheckinsHistoryResponse])
   }
 }

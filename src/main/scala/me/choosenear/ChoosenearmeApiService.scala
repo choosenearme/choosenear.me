@@ -22,7 +22,7 @@ class ChoosenearmeApiService(donorsChoose: DonorsChooseApi, foursquare: Foursqua
         resultFuture map { result =>
           new RestApiResponse(JObject(List(JField("proposals", result))))
         }
-      case "foursquare" :: Nil =>
+      case "user" :: Nil =>
         val secret = request.params.required[String]("secret")
         for {
           user <- userDb.fetchOne(User.where(_.secret eqs secret))
@@ -30,6 +30,15 @@ class ChoosenearmeApiService(donorsChoose: DonorsChooseApi, foursquare: Foursqua
           selfInfo <- api.self
         } yield {
           new RestApiResponse(JObject(List(JField("response", decompose(selfInfo)))))
+        }
+      case "checkins" :: Nil =>
+        val secret = request.params.required[String]("secret")
+        for {
+          user <- userDb.fetchOne(User.where(_.secret eqs secret))
+          val api = foursquare.authenticateUser(user)
+          checkinsInfo <- api.checkins
+        } yield {
+          new RestApiResponse(JObject(List(JField("response", decompose(checkinsInfo)))))
         }
       case _ =>
         Future.value(new RestApiResponse(JObject(List(JField("hello", JString("world"))))))
