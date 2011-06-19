@@ -1,4 +1,4 @@
-name := "choosenear.me web"
+name := "choosenearme"
 
 version := "1.0"
 
@@ -19,3 +19,19 @@ libraryDependencies ++= Seq(
 
 resolvers ++= Seq(
   "twitter.com" at "http://maven.twttr.com/")
+
+push <<= (assembly in Assembly, streams) map { (jar, s) =>
+  val timestamp = {
+    val f = new java.text.SimpleDateFormat("yyyy-MM-dd-HH-mm")
+    f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"))
+    f.format(new java.util.Date)
+  }
+  val nameParts = jar.getName.split('.')
+  val targetName = nameParts.patch(nameParts.size - 1, Seq("-", timestamp, "."), 0).mkString
+  val targetName = "choosenearme-assembly-10-2011-06-19-20-34.jar"
+  val targetPath = "/home/www/builds/" + targetName
+  ("scp -p " + jar +" choosenear.me:" + targetPath) ! s.log
+  ("ssh choosenear.me ln -s " + targetName + " " + "/home/www/builds/root.jar") ! s.log
+}
+
+logLevel in push := Level.Debug
