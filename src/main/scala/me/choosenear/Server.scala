@@ -18,7 +18,7 @@ object Server {
     val foursquareKey = "U5STGT25JQZ4TFANQ4XFLTXQMLSQXRUSZOZMUQIM1ZZMYPLS"
     val foursquareSecret = "KWGNQMEOI10HNZPIW4CTU2POCL3RRQDZLHS41PENANZI0D1K"
     val foursquareApi = new FoursquareApi(foursquareKey, foursquareSecret)
-    val foursquareAuthApi = new FoursquareAuthenticationApi("http://localhost:8080/api/auth/callback", foursquareKey, foursquareSecret)
+    val foursquareAuthApi = new FoursquareAuthenticationApi("https://choosenear.me/api/auth/callback", foursquareKey, foursquareSecret)
     val foursquareAuthService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
     val authFilter = new AuthenticationFilter(foursquareAuthService)
     val restFilter = new RestApiFilter
