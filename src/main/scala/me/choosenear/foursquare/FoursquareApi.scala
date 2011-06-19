@@ -12,12 +12,12 @@ case class UserContactResponse(phone: String, email: String, twitter: String, fa
 // case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
 // case class CheckinDetail(venue: VenueDetail, createdAt: Long)
 
-class FoursquareApi(val ClientId: String, ClientSecret: String) {
-  def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(ClientId, ClientSecret, accessToken)
-  def authenticateUser(user: User) = new AuthenticatedFoursquareApi(ClientId, ClientSecret, user.foursquareToken.value)
+class FoursquareApi {
+  def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(accessToken)
+  def authenticateUser(user: User) = new AuthenticatedFoursquareApi(user.foursquareToken.value)
 }
 
-class AuthenticatedFoursquareApi(val ClientId: String, ClientSecret: String, AccessToken: String) extends JsonApiClient("api.foursquare.com", 443) {
+class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api.foursquare.com", 443) {
   override def clientBuilder = super.clientBuilder.tls
 
   implicit val formats = DefaultFormats

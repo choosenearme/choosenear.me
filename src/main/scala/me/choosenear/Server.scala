@@ -9,20 +9,21 @@ import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB, MongoAddress, Mongo
 
 object Server {
   def main(args: Array[String]): Unit = {
+    val config =
+      (Option(System.getProperty("choosenearme.config")).map(Config.fromFile).getOrElse(DevConfig))
+
     val _mongo = new Mongo
-    val address = MongoAddress(new MongoHostBase { def mongo = _mongo }, "test")
+    val address = MongoAddress(new MongoHostBase { def mongo = _mongo }, config.mongo.name)
     MongoDB.defineDb(DefaultMongoIdentifier, address)
 
     val mongoPool = Executors.newFixedThreadPool(4)
     val userDb = new MongoUserDb(FuturePool(mongoPool))
-    val foursquareKey = "U5STGT25JQZ4TFANQ4XFLTXQMLSQXRUSZOZMUQIM1ZZMYPLS"
-    val foursquareSecret = "KWGNQMEOI10HNZPIW4CTU2POCL3RRQDZLHS41PENANZI0D1K"
-    val foursquareApi = new FoursquareApi(foursquareKey, foursquareSecret)
-    val foursquareAuthApi = new FoursquareAuthenticationApi("http://localhost:8080/api/auth/callback", foursquareKey, foursquareSecret)
+    val foursquareApi = new FoursquareApi
+    val foursquareAuthApi = new FoursquareAuthenticationApi(config.foursquare)
     val foursquareAuthService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
     val authFilter = new AuthenticationFilter(foursquareAuthService)
     val restFilter = new RestApiFilter
-    val api = new ChoosenearmeApiService(new DonorsChooseApi, foursquareApi, userDb)
+    val api = new ChoosenearmeApiService(new DonorsChooseApi(config.donorschoose), foursquareApi, userDb)
     val service = authFilter andThen restFilter andThen api
 
     val server = 

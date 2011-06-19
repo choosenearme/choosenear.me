@@ -4,10 +4,13 @@ version := "1.0"
 
 scalaVersion := "2.8.1"
 
-scalacOptions += "-deprecation"
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-unchecked")
 
 libraryDependencies ++= Seq(
   "com.twitter" % "finagle-core" % "1.5.3",
+  "com.twitter" % "util-eval" % "1.8.17",
   "org.scalaj" %% "scalaj-collection" % "1.1",
   "org.scalaj" %% "scalaj-http" % "0.2.7",
   "net.liftweb" %% "lift-json" % "2.3",
