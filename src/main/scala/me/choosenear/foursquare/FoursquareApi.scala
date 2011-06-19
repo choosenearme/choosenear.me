@@ -14,12 +14,12 @@ case class CheckinDetail(createdAt: Long, venue: VenueDetail)
 case class VenueDetail(name: String, shout: Option[String], location: VenueLocation)
 case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
-class FoursquareApi(val ClientId: String, ClientSecret: String) {
-  def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(ClientId, ClientSecret, accessToken)
-  def authenticateUser(user: User) = new AuthenticatedFoursquareApi(ClientId, ClientSecret, user.foursquareToken.value)
+class FoursquareApi {
+  def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(accessToken)
+  def authenticateUser(user: User) = new AuthenticatedFoursquareApi(user.foursquareToken.value)
 }
 
-class AuthenticatedFoursquareApi(val ClientId: String, ClientSecret: String, AccessToken: String) extends JsonApiClient("api.foursquare.com", 443) {
+class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api.foursquare.com", 443) {
   override def clientBuilder = super.clientBuilder.tls
 
   implicit val formats = DefaultFormats

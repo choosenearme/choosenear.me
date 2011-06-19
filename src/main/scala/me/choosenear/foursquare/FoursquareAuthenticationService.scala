@@ -25,9 +25,9 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
       case "auth" :: Nil =>
         val uri = {
           val encoder = new QueryStringEncoder("https://foursquare.com/oauth2/authenticate")
-          encoder.addParam("client_id", authApi.ClientId)
+          encoder.addParam("client_id", authApi.config.key)
           encoder.addParam("response_type", "code")
-          encoder.addParam("redirect_uri", authApi.RedirectUri)
+          encoder.addParam("redirect_uri", authApi.config.callback)
           encoder.toString
         }
         Future.value(redirectTo(uri))
