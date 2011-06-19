@@ -27,7 +27,7 @@ push <<= (assembly in Assembly, streams) map { (jar, s) =>
     f.format(new java.util.Date)
   }
   val nameParts = jar.getName.split('.')
-  val targetName = nameParts.patch(nameParts.size - 1, Seq("-", timestamp, "."), 0).mkString
+  val targetName = nameParts.patch(nameParts.size - 1, Seq(timestamp), 0).mkString(".")
   val targetPath = "/home/www/builds/" + targetName
   ("scp -p " + jar +" choosenear.me:" + targetPath) ! s.log
   ("ssh choosenear.me ln -s " + targetName + " " + "/home/www/builds/root.jar") ! s.log
