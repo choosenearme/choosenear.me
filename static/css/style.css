@@ -1,4 +1,5 @@
-.ui-page, .ui-content, .ui-bar-b.ui-header{background:url(https://choosenear.me/background.gif);border:none;}
+body{background:url(/images/lines.gif), url(/images/background.gif);height:100%;width:100%;}
+.ui-page, .ui-content, .ui-bar-b.ui-header{background:transparent;border:none;}
 .ui-title{margin:12px 0px 0px 0px !important;}
 .ui-body-b{color:lightBlue;letter-spacing:1.3;text-shadow:none;}
 .min-width-320px h1 img{width:180px;}
