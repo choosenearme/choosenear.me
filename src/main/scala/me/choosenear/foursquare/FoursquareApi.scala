@@ -5,14 +5,14 @@ import net.liftweb.json.DefaultFormats
 case class SelfApiResponse(response: SelfApiResponseBody)
 case class SelfApiResponseBody(user: UserApiResponse)
 case class UserApiResponse(id: String, firstName: String, lastName: String, contact: UserContactResponse)
-case class UserContactResponse(phone: String, email: String, twitter: String, facebook: String)
+case class UserContactResponse(phone: Option[String], email: String, twitter: Option[String], facebook: Option[String])
 
 case class CheckinsHistoryResponse(response: CheckinsHistoryResponseBody)
 case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
 case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
 case class CheckinDetail(createdAt: Long, venue: VenueDetail)
 case class VenueDetail(name: String, shout: Option[String], location: VenueLocation)
-case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
+case class VenueLocation(address: Option[String], crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
 class FoursquareApi {
   def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(accessToken)
