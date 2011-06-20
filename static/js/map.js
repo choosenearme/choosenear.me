@@ -23,10 +23,10 @@ $(function(){
                     title:"This is where you are",
                 });   
 
-            $.ajax({
-                    url: "/js/exampleJSONP?callback=getDonorsChooseData",
-                    dataType: 'jsonp',
-                }); 
+            var jsonpUrl = "/api/location?latlng="+latitude+","+longitude+"&callback=handleDonorsChooseData";
+            var script = document.createElement("script");
+            script.src = jsonpUrl;
+            document.getElementsByTagName("head")[0].appendChild(script);
 
             var markerImage = new google.maps.MarkerImage("https://choosenear.me/marker.png")
             var infoWindow = new google.maps.InfoWindow();
