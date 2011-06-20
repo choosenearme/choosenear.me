@@ -14,6 +14,7 @@
     <script src="/js/jquery-1.5.2.min.js"></script>
     <script src="/js/jquery.mobile-1.0a4.1.min.js"></script>
     <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="/js/utils.js"></script>
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" src="/js/jquery.tmpl.min.js"></script>
   </head>
@@ -25,6 +26,7 @@
       <div  data-role="content">
         <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
           <li><a href="#map">Find DonorsChoose schools nearby</a></li>
+          <li><a href="/api/auth" rel="external">Auth with foursquare api</a></li>
         </ul> 
       </div> 
     </div> 
@@ -48,6 +50,14 @@
       </div> 
     </div> 
 
+    <div  data-role="page" data-theme="b" id="check-ins"> 
+      <div  data-role="header">
+        <h1><a href="/"><img src="/images/choosenearme-logo.png"></a></h1>
+      </div> 
+      <div  data-role="content" id="check-in-info">
+      </div> 
+
+    </div> 
     <script id="more-information-template" type="text/x-jquery-tmpl">
       <h1>${title}</h2>
       <p>${shortDescription}</p>

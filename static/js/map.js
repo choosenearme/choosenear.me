@@ -1,4 +1,13 @@
 $(function(){
+        if(getUrlVars()["secret"] != undefined){
+            $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
+                    var checkins = data.response.response.checkins.items;
+                    for(var i = 0, len = checkins.length;i<len;i++){
+                        $("#check-in-info").append("<p>"+checkins[i].venue.name+"</p>");
+                        $.mobile.changePage("check-ins");
+                    }
+            });
+        }
         $("#map").live("pagecreate", function(event){
                 if(navigator.geolocation) 
                 {   
