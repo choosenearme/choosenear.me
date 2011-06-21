@@ -23,8 +23,15 @@ object Server {
     val foursquareAuthService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
     val authFilter = new AuthenticationFilter(foursquareAuthService)
     val restFilter = new RestApiFilter
-    val api = new ChoosenearmeApiService(new DonorsChooseApi(config.donorschoose), foursquareApi, userDb)
-    val service = authFilter andThen restFilter andThen api
+    val locationService = new LocationService(new DonorsChooseApi(config.donorschoose))
+    val userService = new UserService(foursquareApi, userDb)
+    val checkinsService = new CheckinsService(foursquareApi, userDb)
+
+    val service = authFilter andThen restFilter andThen RestApiRouter {
+      case "location" :: Nil => locationService
+      case "user" :: Nil => userService
+      case "checkins" :: Nil => checkinsService
+    }
 
     val server = 
       (ServerBuilder()
