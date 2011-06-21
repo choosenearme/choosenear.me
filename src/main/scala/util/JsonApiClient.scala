@@ -3,6 +3,7 @@ package choosenearme
 import com.twitter.finagle.builder.{ClientBuilder, Http}
 import com.twitter.util.Future
 import java.net.URLEncoder.encode
+import java.util.logging.Logger
 import net.liftweb.json.JsonParser
 import net.liftweb.json.JsonAST.JValue
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
@@ -15,7 +16,8 @@ class JsonApiClient(host: String, port: Int = 80) {
     (ClientBuilder()
       .codec(Http)
       .hosts(host + ":" + port)
-      .hostConnectionLimit(10))
+      .hostConnectionLimit(10)
+      .logger(Logger.getLogger("http")))
 
   val client = clientBuilder.build()
 

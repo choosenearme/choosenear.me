@@ -3,6 +3,9 @@ package choosenearme
 import java.text.SimpleDateFormat
 import java.util.Date
 
+case class DonorsChooseResponse(proposals: List[DonorsChooseProposal])
+case class DonorsChooseProposal(schoolName: String)
+
 class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.donorschoose.org") {
   implicit val formats = new net.liftweb.json.DefaultFormats {
     override protected def dateFormatter = new SimpleDateFormat("yyyy-MM-dd")

@@ -26,3 +26,4 @@ object DevConfig extends Config(
                                            callback = "http://localhost:8080/auth/callback"),
                           DonorsChooseConfig(key = "DONORSCHOOSE"),
                           None)
+
