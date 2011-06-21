@@ -9,14 +9,7 @@ class CheckinService(foursquare: FoursquareApi, userDb: UserDb) extends RestApiS
   implicit val formats = DefaultFormats
 
   override def post(request: RestApiRequest) = {
-    // val secret = request.params.required[String]("secret")
-    // for {
-    //   user <- userDb.fetchOne(User.where(_.secret eqs secret))
-    //   val api = foursquare.authenticateUser(user)
-    //   checkinsInfo <- api.checkins
-    // } yield {
-    //   new RestApiResponse(JObject(List(JField("response", decompose(checkinsInfo)))))
-    // }
-    Future.exception(new Exception())
+    println(request.underlying)
+    Future.value(new RestApiResponse(JObject(List())))
   }
 }

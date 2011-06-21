@@ -7,10 +7,10 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND
 
 class RestApiService extends Service[RestApiRequest, RestApiResponse] {
   override def apply(request: RestApiRequest): Future[RestApiResponse] = request match {
-    case RestApiRequest(HttpMethod.GET, _, _) => get(request)
-    case RestApiRequest(HttpMethod.PUT, _, _) => put(request)
-    case RestApiRequest(HttpMethod.POST, _, _) => post(request)
-    case RestApiRequest(HttpMethod.DELETE, _, _) => delete(request)
+    case RestApiRequest(HttpMethod.GET, _, _, _) => get(request)
+    case RestApiRequest(HttpMethod.PUT, _, _, _) => put(request)
+    case RestApiRequest(HttpMethod.POST, _, _, _) => post(request)
+    case RestApiRequest(HttpMethod.DELETE, _, _, _) => delete(request)
   }
 
   def get(request: RestApiRequest) = notFound(request)
