@@ -26,11 +26,13 @@ object Server {
     val locationService = new LocationService(new DonorsChooseApi(config.donorschoose))
     val userService = new UserService(foursquareApi, userDb)
     val checkinsService = new CheckinsService(foursquareApi, userDb)
+    val checkinService = new CheckinService(foursquareApi, userDb)
 
     val service = authFilter andThen restFilter andThen RestApiRouter {
       case "location" :: Nil => locationService
       case "user" :: Nil => userService
       case "checkins" :: Nil => checkinsService
+      case "checkin" :: Nil => checkinService
     }
 
     val server = 
