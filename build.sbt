@@ -30,7 +30,15 @@ push <<= (assembly in Assembly, streams) map { (jar, s) =>
   val targetName = nameParts.patch(nameParts.size - 1, Seq(timestamp), 0).mkString(".")
   val targetPath = "/home/www/builds/" + targetName
   ("scp -p " + jar +" choosenear.me:" + targetPath) ! s.log
-  ("ssh choosenear.me ln -s " + targetName + " " + "/home/www/builds/root.jar") ! s.log
+  ("ssh choosenear.me ln -fs " + targetName + " " + "/home/www/builds/root.jar") ! s.log
+}
+
+pushStatic <<= (streams) map { (s) =>
+  ("scp -pr static choosenear.me:/home/www/static") ! s.log
+}
+
+remoteApiRestart <<= (streams) map { (s) =>
+  ("ssh choosenear.me sudo supervisorctl restart choosenearme") ! s.log
 }
 
 logLevel in push := Level.Debug
