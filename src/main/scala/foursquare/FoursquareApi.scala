@@ -29,7 +29,7 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     val params =
       Map(
         "oauth_token" -> AccessToken)
-    call(endpoint, params).map(_.extract[SelfApiResponse])
+    get(endpoint, params).map(_.extract[SelfApiResponse])
   }
 
   def checkins = {
@@ -37,6 +37,6 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     val params =
       Map(
         "oauth_token" -> AccessToken)
-      call(endpoint, params).map(_.extract[CheckinsHistoryResponse])
+      get(endpoint, params).map(_.extract[CheckinsHistoryResponse])
   }
 }

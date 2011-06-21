@@ -15,6 +15,6 @@ class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.don
         "APIKey" -> config.key,
         "centerLat" -> geo.lat.toString,
         "centerLng" -> geo.long.toString)
-    call(endpoint, params)
+    get(endpoint, params)
   }
 }

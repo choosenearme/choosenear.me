@@ -2,10 +2,11 @@ package choosenearme
 
 import com.twitter.finagle.builder.{ClientBuilder, Http}
 import com.twitter.util.Future
+import java.net.URLEncoder.encode
 import net.liftweb.json.JsonParser
 import net.liftweb.json.JsonAST.JValue
-import org.jboss.netty.handler.codec.http.{QueryStringEncoder, DefaultHttpRequest}
-import org.jboss.netty.handler.codec.http.HttpMethod.GET
+import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
+import org.jboss.netty.handler.codec.http.{QueryStringEncoder, DefaultHttpRequest, HttpMethod, HttpHeaders}
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
@@ -18,21 +19,42 @@ class JsonApiClient(host: String, port: Int = 80) {
 
   val client = clientBuilder.build()
 
-  def call(endpoint: String, params: Map[String, String]): Future[JValue] = {
+  def get(endpoint: String, params: Map[String, String]): Future[JValue] = {
     val uri = {
       val encoder = new QueryStringEncoder(endpoint)
       for ((k, v) <- params)
         encoder.addParam(k, v)
       encoder.toString
     }
-    val request = new DefaultHttpRequest(HTTP_1_1, GET, uri)
-    request.addHeader("Accept", "*/*")
-    request.addHeader("User-Agent", "choosenear.me-api/1.0")
-    request.addHeader("Host", host)
+    call(HttpMethod.GET, uri)
+  }
+
+  def post(endpoint: String, params: Map[String, String]): Future[JValue] = {
+    val body =
+      (for ((k, v) <- params)
+        yield encode(k, UTF_8.name) + "=" + encode(v, UTF_8.name)).mkString("&")
+    call(HttpMethod.POST, endpoint, Some(body), Map(HttpHeaders.Names.CONTENT_TYPE -> "application/x-www-form-urlencoded"))
+  }
+
+  def headers = Map(
+    HttpHeaders.Names.ACCEPT -> "*/*",
+    HttpHeaders.Names.USER_AGENT -> "choosenear.me-api/1.0",
+    HttpHeaders.Names.HOST -> host)
+
+  def call(method: HttpMethod, uri: String, body: Option[String] = None, extraHeaders: Map[String, String] = Map()): Future[JValue] = {
+    val request = new DefaultHttpRequest(HTTP_1_1, method, uri)
+    for ((name, value) <- headers)
+      request.addHeader(name, value)
+    for ((name, value) <- extraHeaders)
+      request.addHeader(name, value)
+    for (content <- body) {
+      val buffer = copiedBuffer(content, UTF_8)
+      request.addHeader(HttpHeaders.Names.CONTENT_LENGTH, buffer.readableBytes)
+      request.setContent(buffer)
+    }
+
     client(request) map { response =>
       val content = response.getContent.toString(UTF_8)
-      // println("API call to "+host+":"+port+uri+" gives response:\n\n"+content+"\n\n")
-      // println(response)
       JsonParser.parse(content)
     }
   }

@@ -15,7 +15,7 @@ class FoursquareAuthenticationApi(val config: FoursquareConfig) extends JsonApiC
         "grant_type" -> "authorization_code",
         "redirect_uri" -> config.callback,
         "code" -> code)
-    call(endpoint, params) collect {
+    get(endpoint, params) collect {
       case JObject(List(JField("access_token", JString(accessToken)))) =>
         accessToken
     }
