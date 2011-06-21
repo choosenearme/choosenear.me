@@ -19,7 +19,7 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
   }
 
   override def apply(_request: HttpRequest) = {
-    val request = new RestApiRequest(_request)
+    val request = RestApiRequest.fromHttpRequest(_request)
 
     request.path match {
       case "auth" :: Nil =>

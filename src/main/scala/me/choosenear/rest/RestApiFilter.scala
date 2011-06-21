@@ -11,7 +11,7 @@ import org.jboss.netty.util.CharsetUtil.UTF_8
 
 class RestApiFilter extends HttpFilter[RestApiRequest, RestApiResponse] {
   override def apply(request: HttpRequest, service: Service[RestApiRequest, RestApiResponse]): Future[HttpResponse] = {
-    val apiRequest = new RestApiRequest(request)
+    val apiRequest = RestApiRequest.fromHttpRequest(request)
     service(apiRequest) map { apiResponse =>
       val callback: Option[String] = apiRequest.params.optional[String]("callback")
 

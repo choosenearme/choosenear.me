@@ -1,14 +1,16 @@
 package me.choosenear
 
-import org.jboss.netty.handler.codec.http.{HttpRequest, QueryStringDecoder}
+import org.jboss.netty.handler.codec.http.{HttpMethod, HttpRequest, QueryStringDecoder}
 import scalaj.collection.Implicits._
 
-class RestApiRequest(val request: HttpRequest) {
-  lazy val method = request.getMethod
-  lazy val (path, params) = {
+case class RestApiRequest(method: HttpMethod, path: List[String], params: RestApiParameters)
+
+object RestApiRequest {
+  def fromHttpRequest(request: HttpRequest): RestApiRequest = {
+    val method = request.getMethod
     val decoder = new QueryStringDecoder(request.getUri)
-    val _path = decoder.getPath.split('/').toList.drop(1)
-    val _params = decoder.getParameters.asScala.mapValues(_.asScala)
-    (_path, new RestApiParameters(_params))
+    val path = decoder.getPath.split('/').toList.drop(1)
+    val params = new RestApiParameters(decoder.getParameters.asScala.mapValues(_.asScala))
+    RestApiRequest(method, path, params)
   }
 }
