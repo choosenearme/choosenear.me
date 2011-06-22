@@ -36,15 +36,17 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
         for {
           accessToken <- authApi.auth(code)
           userInfo <- fsqApi.authenticate(accessToken).self
-          val _user =
-            (User.createRecord
-                 .foursquareId(userInfo.response.user.id)
-                 .foursquareToken(accessToken)
-                 .firstName(userInfo.response.user.firstName)
-                 .lastName(userInfo.response.user.lastName)
-                 .email(userInfo.response.user.contact.email)
-                 .phone(userInfo.response.user.contact.phone))
-          user <- userDb.save(_user)
+          user <- (userDb.fetchOne(User.where(_.foursquareId eqs userInfo.response.user.id))
+                         .rescue {
+                           case ex: java.util.NoSuchElementException =>
+                             userDb.save(User.createRecord
+                                  .foursquareId(userInfo.response.user.id)
+                                  .foursquareToken(accessToken)
+                                  .firstName(userInfo.response.user.firstName)
+                                  .lastName(userInfo.response.user.lastName)
+                                  .email(userInfo.response.user.contact.email)
+                                  .phone(userInfo.response.user.contact.phone))
+                         })
         } yield {
           redirectTo("/?secret=" + user.secret.value)
         }
