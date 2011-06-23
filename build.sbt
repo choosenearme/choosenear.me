@@ -34,7 +34,7 @@ push <<= (assembly in Assembly, streams) map { (jar, s) =>
 }
 
 pushStatic <<= (streams) map { (s) =>
-  ("scp -pr static choosenear.me:/home/www/static") ! s.log
+  ("scp -r static choosenear.me:/home/www") ! s.log
 }
 
 remoteApiRestart <<= (streams) map { (s) =>
