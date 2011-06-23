@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 case class DonorsChooseResponse(proposals: List[DonorsChooseProposal])
-case class DonorsChooseProposal(schoolName: String)
+case class DonorsChooseProposal(schoolName: String, latitude: String, longitude: String)
 
 class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.donorschoose.org") {
   implicit val formats = new net.liftweb.json.DefaultFormats {
@@ -17,7 +17,7 @@ class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.don
       Map(
         "APIKey" -> config.key,
         "centerLat" -> geo.lat.toString,
-        "centerLng" -> geo.long.toString)
+        "centerLng" -> geo.lng.toString)
     get(endpoint, params)
   }
 }
