@@ -1,3 +1,18 @@
+if(typeof CNM == "undefined"){
+    CNM = {};
+}
+
+var createMap = function(){
+
+    var myOptions = {
+        zoom: 12,
+        center:new google.maps.LatLng(41,87),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    CNM.map = new google.maps.Map(document.getElementById("map_canvas"),
+        myOptions);
+}
+
 $(function(){
         if(getUrlVars()["secret"] != undefined){
             $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
@@ -6,29 +21,28 @@ $(function(){
                         $("#check-in-info").append("<p>"+checkins[i].venue.name+"</p>");
                         $.mobile.changePage("check-ins");
                     }
-            });
+                });
         }
-        $("#map").live("pagecreate", function(event){
+        createMap();
+        $("#map").live("pageshow", function(event){
                 if(navigator.geolocation) 
                 {   
                     navigator.geolocation.getCurrentPosition(setPosition);
                 }
             });
+        $("#map").live("pageshow", function(event){
+                google.maps.event.trigger(CNM.map, 'resize');
+            });
         function setPosition(position) 
         {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
+            console.log(latitude, longitude);
             var myLatlng = new google.maps.LatLng(latitude, longitude);
-            var myOptions = {
-                zoom: 12,
-                center: myLatlng,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-            var map = new google.maps.Map(document.getElementById("map_canvas"),
-                myOptions);
+            CNM.map.setCenter(myLatlng);
             var marker = new google.maps.Marker({
                     position: myLatlng, 
-                    map: map, 
+                    map: CNM.map, 
                     title:"This is where you are",
                 });   
 
@@ -37,7 +51,7 @@ $(function(){
             script.src = jsonpUrl;
             document.getElementsByTagName("head")[0].appendChild(script);
 
-            var markerImage = new google.maps.MarkerImage("https://choosenear.me/marker.png")
+            var markerImage = new google.maps.MarkerImage("/images/marker.png")
             var infoWindow = new google.maps.InfoWindow();
             window.handleDonorsChooseData = function(data){
                 var proposals = window.proposals = data.proposals.proposals;
@@ -46,7 +60,8 @@ $(function(){
                     var proposalLatLng = new google.maps.LatLng(parseFloat(proposal.latitude, 10), parseFloat(proposal.longitude, 10));
                     var marker = new google.maps.Marker({
                             position: proposalLatLng, 
-                            map: map, 
+                            map: CNM.map, 
+                            animation: google.maps.Animation.DROP,
                             title:proposal.title,
                             icon:markerImage
                         });
@@ -63,10 +78,11 @@ $(function(){
             function addMarkerClickEvent(marker, proposal){
                 google.maps.event.addListener(marker, 'click', function() {
                         var infoWindow = getInfoWindow();
-                        var content = "<a class='proposal-link' onclick=''>"+proposal.title +"</a>";
+                        var content = $("<div/>").append($("#info-bubble-template").tmpl(proposal)).html();
                         infoWindow.setContent(content);
-                        infoWindow.open(map, marker);
+                        infoWindow.open(CNM.map, marker);
                         $(".proposal-link").click(proposalClickLinkHandler);
+                        console.log($(".proposal-link").click(proposalClickLinkHandler));
                     });
             }
 
@@ -79,7 +95,7 @@ $(function(){
                 $.mobile.changePage("more-information");
                 $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
             }
-            google.maps.event.addListener(map,'tilesloaded',scrollToMap);
+            google.maps.event.addListener(CNM.map,'tilesloaded',scrollToMap);
 
             function scrollToMap(){
                 $.mobile.silentScroll($("#map-canvas-container").position().top);

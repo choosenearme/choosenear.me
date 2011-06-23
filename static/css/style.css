@@ -21,3 +21,7 @@ body{background:url(/images/lines.gif), url(/images/background.gif);height:100%;
   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
   border:7px solid rgba(0,65,121,.5);
 }
+
+.bubble-image{width:100px;float:right;}
+.percent-funded-wrapper{width:120px;background:gray;}
+.info-bubble{width:300px;padding-top:10px;}
