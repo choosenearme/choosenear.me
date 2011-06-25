@@ -21,9 +21,10 @@ class RestApiFilter extends HttpFilter[RestApiRequest, RestApiResponse] {
       val response = new DefaultHttpResponse(HTTP_1_1, OK)
       response.setContent(copiedBuffer(wrappedBody, UTF_8))
       response
-    } handle { case RestApiException(msg, status) =>
+    } handle { case ex @ RestApiException(msg, status) =>
       val response = new DefaultHttpResponse(HTTP_1_1, status)
       response.setContent(copiedBuffer(msg, UTF_8))
+      ex.postProcess(response)
       response
     }
   }
