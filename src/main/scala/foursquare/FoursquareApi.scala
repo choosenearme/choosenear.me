@@ -12,7 +12,7 @@ case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody
 case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
 case class CheckinDetail(createdAt: Long, venue: VenueDetail)
 case class VenueDetail(name: String, shout: Option[String], location: VenueLocation)
-case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
+case class VenueLocation(address: Option[String], crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
 class FoursquareApi {
   def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(accessToken)
