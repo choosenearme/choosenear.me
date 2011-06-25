@@ -42,6 +42,16 @@ $(function(){
         $("#map").live("pagebeforeshow", function(event){
                 CNM.markers.clear();
             });
+        $("#more-information").live("pagebeforeshow", function(event){
+                if($("#more-information").find("h2").length == 0){
+                    loadProposals();
+                    var linkText = localStorage.getItem("lastProposalLinkText");
+                    var currentProposal = window.proposals.filter(function(proposal){
+                            return proposal.title == linkText; 
+                        });
+                    $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
+                }
+            });
         window.setMapPosition = function setMapPosition() 
         {
             CNM.markers.clear();
@@ -63,6 +73,7 @@ $(function(){
 
             window.handleDonorsChooseData = function(data){
                 var proposals = window.proposals = data.proposals.proposals;
+                saveProposals(proposals);
                 for(var i = 0, len = proposals.length;i<len;i++){
                     var proposal = proposals[i];
                     var proposalLatLng = new google.maps.LatLng(parseFloat(proposal.latitude, 10), parseFloat(proposal.longitude, 10));
@@ -91,19 +102,31 @@ $(function(){
                         infoWindow.setContent(content);
                         infoWindow.open(CNM.map, marker);
                         $(".proposal-link").click(proposalClickLinkHandler);
-                        console.log($(".proposal-link").click(proposalClickLinkHandler));
                     });
             }
 
             function proposalClickLinkHandler(event){
                 event.preventDefault();
                 var link = $(this);
+                localStorage.setItem("lastProposalLinkText", link.html());
                 var currentProposal = window.proposals.filter(function(proposal){
                         return proposal.title == link.html(); 
                     });
-                $.mobile.changePage("#more-information");
                 $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
+                $.mobile.changePage("#more-information");
             }
 
         } 
     });
+
+function saveProposals(proposals){
+    if('localStorage' in window && window['localStorage'] !== null){
+        localStorage.setItem("proposals", JSON.stringify(proposals));
+    }
+}
+function loadProposals(){
+    if('localStorage' in window && window['localStorage'] !== null){
+        window.proposals = localStorage.getItem("proposals");
+        window.proposals = JSON.parse(window.proposals);
+    }
+}
