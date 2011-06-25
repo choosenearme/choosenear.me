@@ -5,7 +5,7 @@ import net.liftweb.json.DefaultFormats
 case class SelfApiResponse(response: SelfApiResponseBody)
 case class SelfApiResponseBody(user: UserApiResponse)
 case class UserApiResponse(id: String, firstName: String, lastName: String, contact: UserContactResponse)
-case class UserContactResponse(phone: String, email: String, twitter: String, facebook: String)
+case class UserContactResponse(phone: Option[String], email: String, twitter: Option[String], facebook: Option[String])
 
 case class CheckinsHistoryResponse(response: CheckinsHistoryResponseBody)
 case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
