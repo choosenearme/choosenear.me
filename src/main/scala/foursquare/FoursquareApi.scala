@@ -32,11 +32,13 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     get(endpoint, params).map(_.extract[SelfApiResponse])
   }
 
-  def checkins = {
+  def checkinsUntyped = {
     val endpoint = "/v2/users/self/checkins"
     val params =
       Map(
         "oauth_token" -> AccessToken)
-      get(endpoint, params).map(_.extract[CheckinsHistoryResponse])
+      get(endpoint, params)
   }
+
+  def checkins = checkinsUntyped.map(_.extract[CheckinsHistoryResponse])
 }

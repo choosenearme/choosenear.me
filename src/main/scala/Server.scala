@@ -25,20 +25,20 @@ object Server {
 
     val foursquareApi = new FoursquareApi
     val foursquareAuthApi = new FoursquareAuthenticationApi(config.foursquare)
-    val foursquareAuthService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
     val donorschooseApi = new DonorsChooseApi(config.donorschoose)
     val twilioApi = config.twilio.map(new TwilioApi(_))
 
-    val authFilter = new AuthenticationFilter(foursquareAuthService)
     val restFilter = new RestApiFilter
 
+    val authService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
     val locationService = new LocationService(donorschooseApi)
     val userService = new UserService(foursquareApi, userDb)
     val checkinsService = new CheckinsService(foursquareApi, userDb)
     val checkinService = new CheckinService(donorschooseApi, foursquareApi, twilioApi, userDb)
     val pingService = new PingService
 
-    val service = authFilter andThen restFilter andThen RestApiRouter {
+    val service = restFilter andThen RestApiRouter {
+      case "auth" :: _ => authService
       case "location" :: Nil => locationService
       case "user" :: Nil => userService
       case "checkins" :: Nil => checkinsService

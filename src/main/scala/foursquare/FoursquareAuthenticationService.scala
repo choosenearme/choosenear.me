@@ -11,16 +11,16 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.{BAD_REQUEST, FOUND
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqApi: FoursquareApi, userDb: UserDb) extends Service[HttpRequest, HttpResponse] {
-  def redirectTo(uri: String): HttpResponse = {
-    val response = new DefaultHttpResponse(HTTP_1_1, FOUND)
-    response.addHeader("Location", uri)
-    response
+class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqApi: FoursquareApi, userDb: UserDb) extends RestApiService {
+  def redirectTo(uri: String): Future[RestApiResponse] = {
+    Future.exception(new RestApiException("", FOUND) {
+      override def postProcess(response: HttpResponse): Unit = {
+        response.addHeader("Location", uri)
+      }
+    })
   }
 
-  override def apply(_request: HttpRequest) = {
-    val request = RestApiRequest.fromHttpRequest(_request)
-
+  override def apply(request: RestApiRequest): Future[RestApiResponse] = {
     request.path match {
       case "auth" :: Nil =>
         val uri = {
@@ -30,7 +30,7 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
           encoder.addParam("redirect_uri", authApi.config.callback)
           encoder.toString
         }
-        Future.value(redirectTo(uri))
+        redirectTo(uri)
       case "auth" :: "callback" :: Nil =>
         val code = request.params.required[String]("code")
         for {
@@ -47,11 +47,12 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
                                   .email(userInfo.response.user.contact.email)
                                   .phone(userInfo.response.user.contact.phone))
                          })
+          redirect <- redirectTo("/?secret=" + user.secret.value)
         } yield {
-          redirectTo("/?secret=" + user.secret.value)
+          redirect
         }
       case _ =>
-        error("TODO")
+        Future.exception(RestApiNotFoundException)
     }
   }
 }
