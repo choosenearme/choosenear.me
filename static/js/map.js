@@ -39,6 +39,9 @@ $(function(){
         $("#map").live("pageshow", function(event){
                 window.setMapPosition();
             });
+        $("#map").live("pagebeforeshow", function(event){
+                CNM.markers.clear();
+            });
         window.setMapPosition = function setMapPosition() 
         {
             CNM.markers.clear();
@@ -57,6 +60,7 @@ $(function(){
 
             var markerImage = new google.maps.MarkerImage("/images/marker.png")
             var infoWindow = new google.maps.InfoWindow();
+
             window.handleDonorsChooseData = function(data){
                 var proposals = window.proposals = data.proposals.proposals;
                 for(var i = 0, len = proposals.length;i<len;i++){
@@ -97,7 +101,7 @@ $(function(){
                 var currentProposal = window.proposals.filter(function(proposal){
                         return proposal.title == link.html(); 
                     });
-                $.mobile.changePage("more-information");
+                $.mobile.changePage("#more-information");
                 $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
             }
 

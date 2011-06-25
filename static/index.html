@@ -60,16 +60,26 @@
         </div> 
 
         <script id="more-information-template" type="text/x-jquery-tmpl">
-            <h1>${title}</h2>
-            <p>${shortDescription}</p>
+            <div class="more-information">
+                <img src="${imageURL}" class="more-info-image"/>
+                <div class="proposal">
+                    <h1>${title}</h2>
+
+                    <em>${costToComplete}</em> left to fund - ${totalPrice}
+                    <p>${shortDescription}</p>
+                    <a href="${fundURL}"><button>Donate Now</button></a>
+                </div>
+            </div>
         </script>
+
         <script id="info-bubble-template" type="text/x-jquery-tmpl">
             <div class="info-bubble">
-                <div style="float:left;width:130px;width:175px;">
+                <div class="info-bubble-inner" style="">
                     <a class="proposal-link">${title}</a>
                     <div class="percent-funded-wrapper">
-                        <div style="background:green;width:${percentFunded}%;">&nbsp;</div>
+                        <div class="percent-funded" style="width:${percentFunded}%;"></div>
                     </div>
+                    <div class="cost-to-complete">$${costToComplete} to complete</div>
                     <div>${schoolName}</div>
                     <div>${city} ${state} ${zip}</div>
                 </div>

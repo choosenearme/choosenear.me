@@ -8,8 +8,8 @@ body{background:url(/images/lines.gif), url(/images/background.gif);height:100%;
 .min-width-320px #map-canvas-container{width:300px;height:500px;}
 .min-width-480px #map-canvas-container{width:450px;height:500px;}
 .min-width-1024px #map-canvas-container{width:900px;height:500px;margin:auto;}
-.proposal-link{color:blue;text-decoration:underline;cursor:pointer;}
-.proposal-link:hover{color:blue;}
+.proposal-link{color:#0162AA;cursor:pointer;font-weight:bold;}
+.proposal-link:hover{color:#61A1D7;}
 
 
 .box_round {
@@ -22,6 +22,22 @@ body{background:url(/images/lines.gif), url(/images/background.gif);height:100%;
   border:7px solid rgba(0,65,121,.5);
 }
 
-.bubble-image{width:100px;float:right;}
-.percent-funded-wrapper{width:120px;background:gray;}
-.info-bubble{width:300px;padding-top:10px;}
+.bubble-image{width:90px;float:right;border:solid #0066B2;border-radius:2px;}
+.percent-funded-wrapper{width:120px;background:white;border-radius:3px;border:solid #0066B2;margin:4px 0px;position:relative;height:7px;}
+.percent-funded{background:#61a1d7;color:black;height:100%}
+.info-bubble{width:300px;padding-top:10px;color:black;font-size:12px;}
+.info-bubble-inner{float:left;width:200px;}
+.cost-to-complete{color:#17BBE1;margin:0px 0px 7px 0px;font-weight:bold;}
+
+
+.proposal-info{color:white;}
+
+
+.more-information{width:760px;margin:auto;}
+.proposal{ float:left; width:500px;margin-left:20px;}
+.more-info-image{background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #FFFFFF;
+    box-shadow: 0 2px 15px #333333;
+    padding: 10px 10px 25px;
+    float:left;
+    position: relative;}
