@@ -1,12 +1,24 @@
 if(typeof CNM == "undefined"){
     CNM = {};
+    CNM.markers = [];
+    CNM.currentPosition = new google.maps.LatLng(40.75166109, -73.99088802);
+    CNM.markers.clear = function(){
+        for(var i = 0, len = this.length; i<len;i++){
+            var marker = this[i];
+            marker.setMap(null);
+        }
+    }
 }
+
+navigator.geolocation.getCurrentPosition(function(position){ 
+        CNM.currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+    });
 
 var createMap = function(){
 
     var myOptions = {
         zoom: 12,
-        center:new google.maps.LatLng(41,87),
+        center:CNM.currentPosition,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     CNM.map = new google.maps.Map(document.getElementById("map_canvas"),
@@ -25,28 +37,20 @@ $(function(){
         }
         createMap();
         $("#map").live("pageshow", function(event){
-                if(navigator.geolocation) 
-                {   
-                    navigator.geolocation.getCurrentPosition(setPosition);
-                }
+                window.setMapPosition();
             });
-        $("#map").live("pageshow", function(event){
-                google.maps.event.trigger(CNM.map, 'resize');
-            });
-        function setPosition(position) 
+        window.setMapPosition = function setMapPosition() 
         {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            console.log(latitude, longitude);
-            var myLatlng = new google.maps.LatLng(latitude, longitude);
-            CNM.map.setCenter(myLatlng);
+            CNM.markers.clear();
             var marker = new google.maps.Marker({
-                    position: myLatlng, 
+                    position: CNM.currentPosition, 
                     map: CNM.map, 
                     title:"This is where you are",
                 });   
-
-            var jsonpUrl = "/api/location?latlng="+latitude+","+longitude+"&callback=handleDonorsChooseData";
+            CNM.markers.push(marker);
+            google.maps.event.trigger(CNM.map, 'resize');
+            CNM.map.setCenter(CNM.currentPosition);
+            var jsonpUrl = "/api/location?latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
             var script = document.createElement("script");
             script.src = jsonpUrl;
             document.getElementsByTagName("head")[0].appendChild(script);
@@ -65,6 +69,7 @@ $(function(){
                             title:proposal.title,
                             icon:markerImage
                         });
+                    CNM.markers.push(marker);
                     addMarkerClickEvent(marker, proposal);
                 }
             }
@@ -95,10 +100,6 @@ $(function(){
                 $.mobile.changePage("more-information");
                 $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
             }
-            google.maps.event.addListener(CNM.map,'tilesloaded',scrollToMap);
 
-            function scrollToMap(){
-                $.mobile.silentScroll($("#map-canvas-container").position().top);
-            }
         } 
     });
