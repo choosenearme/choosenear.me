@@ -48,7 +48,6 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     get(endpoint, params)
   }
 
-<<<<<<< HEAD
   def categories = {
 	val endpoint = "/v2/venues/categories"
 	val params =
@@ -57,8 +56,5 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
 	  get(endpoint, params).map(_.extract[CategoriesResponse])
   }
 
-  def checkins = checkinsUntyped.map(_.extract[CheckinsHistoryResponse])
-=======
   def checkins = checkinsUntyped(since = None).map(_.extract[CheckinsHistoryResponse])
->>>>>>> 92456b411d3b4a55db097b114a8df3314ea3f010
 }
