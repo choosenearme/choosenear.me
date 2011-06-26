@@ -29,12 +29,12 @@ ul.nav{float:right;}
   border:7px solid rgba(0,65,121,.5);
 }
 
-.bubble-image{width:90px;float:right;border:solid #0066B2;border-radius:2px;}
-.percent-funded-wrapper{width:120px;background:white;border-radius:3px;border:solid #0066B2;margin:4px 0px;position:relative;height:7px;}
+.bubble-image{width:90px;float:right;border:solid #DDDDDD 2px;border-radius:2px;}
+.percent-funded-wrapper{width:120px;background:#EEEEEE;margin:4px 0px;position:relative;height:7px;}
 .percent-funded{background:#61a1d7;color:black;height:100%}
 .info-bubble{width:300px;padding-top:10px;color:black;font-size:12px;}
 .info-bubble-inner{float:left;width:200px;}
-.cost-to-complete{color:#17BBE1;margin:0px 0px 7px 0px;font-weight:bold;}
+.cost-to-complete{color:#61A1D7;margin:0px 0px 7px 0px;font-weight:bold;}
 
 
 .proposal-info{color:white;}
