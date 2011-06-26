@@ -11,8 +11,8 @@ case class UserContactResponse(phone: Option[String], email: String, twitter: Op
 case class CheckinsHistoryResponse(response: CheckinsHistoryResponseBody)
 case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
 case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
-case class CheckinDetail(createdAt: Long, venue: VenueDetail)
-case class VenueDetail(name: String, shout: Option[String], location: VenueLocation, categories: List[ParentCategory])
+case class CheckinDetail(createdAt: Long, shout: Option[String], venue: Option[VenueDetail])
+case class VenueDetail(id: String, name: Option[String], location: VenueLocation, categories: List[ParentCategory])
 case class VenueLocation(address: Option[String], crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
 case class CategoriesResponse(response: CategoriesResponseBody)

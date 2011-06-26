@@ -1,6 +1,7 @@
 package choosenearme
 
-import Parser.DoubleParser
+import choosenearme.Parser.DoubleParser
+import scala.collection.mutable.ArrayBuffer
 
 case class LatLng(lat: Double, lng: Double)
 
@@ -40,25 +41,31 @@ object LatLng {
   }
 
   def cluster(latlngs: List[LatLng], maxRadiusInMeters: Double): List[LatLng] = {
-    case class Cluster(var centroid: LatLng, var points: List[LatLng])
+    case class Cluster(var centroid: LatLng, val points: ArrayBuffer[LatLng])
 
     val maxRadius = maxRadiusInMeters / 111120.0 // in degrees
-    var clusters: List[Cluster] = Nil
+    val clusters = ArrayBuffer[Cluster]()
 
     for (latlng <- latlngs) {
       if (clusters.isEmpty)
-        clusters ::= Cluster(latlng, Nil)
+        clusters += Cluster(latlng, ArrayBuffer())
 
       val nearestCluster = clusters.minBy(_.centroid)(LatLng.near(latlng))
 
       if (LatLng.distance(latlng, nearestCluster.centroid) < maxRadius) {
-        nearestCluster.points ::= latlng
-        nearestCluster.centroid = centroid(nearestCluster.points)
+        val newCentroid = {
+          val size = nearestCluster.points.size
+          val newLat = (nearestCluster.centroid.lat * size + latlng.lat) / (size + 1)
+          val newLng = (nearestCluster.centroid.lng * size + latlng.lng) / (size + 1)
+          LatLng(newLat, newLng)
+        }
+        nearestCluster.points += latlng
+        nearestCluster.centroid = newCentroid
       } else {
-        clusters ::= Cluster(latlng, latlng :: Nil)
+        clusters += Cluster(latlng, ArrayBuffer(latlng))
       }
     }
 
-    clusters.map(_.centroid)
+    clusters.map(_.centroid).toList
   }
 }
