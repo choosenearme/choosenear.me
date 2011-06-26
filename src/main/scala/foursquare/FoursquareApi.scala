@@ -11,8 +11,14 @@ case class CheckinsHistoryResponse(response: CheckinsHistoryResponseBody)
 case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody)
 case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
 case class CheckinDetail(createdAt: Long, venue: VenueDetail)
-case class VenueDetail(name: String, shout: Option[String], location: VenueLocation)
+case class VenueDetail(name: String, shout: Option[String], location: VenueLocation, categories: List[ParentCategory])
 case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
+
+case class CategoriesResponse(response: CategoriesResponseBody)
+case class CategoriesResponseBody(categories: List[ParentCategory])
+case class ParentCategory(name: String, pluralName: String, icon: String, categories: Option[List[SubCategory]])
+case class SubCategory(name: String, pluralName: String, icon: String, categories: Option[List[SubSubCategory]])
+case class SubSubCategory(name: String, pluralName: String, icon: String)
 
 class FoursquareApi {
   def authenticate(accessToken: String) = new AuthenticatedFoursquareApi(accessToken)
@@ -38,6 +44,14 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
       Map(
         "oauth_token" -> AccessToken)
       get(endpoint, params)
+  }
+
+  def categories = {
+	val endpoint = "/v2/venues/categories"
+	val params =
+	  Map(
+	  	"oauth_token" -> AccessToken)
+	  get(endpoint, params).map(_.extract[CategoriesResponse])
   }
 
   def checkins = checkinsUntyped.map(_.extract[CheckinsHistoryResponse])
