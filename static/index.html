@@ -19,25 +19,19 @@
         <script type="text/javascript" src="/js/jquery.tmpl.min.js"></script>
     </head>
     <body>
-        <div data-role="page" data-theme="b" id="original"> 
-            <div data-role="header" data-position="fixed">
-                <h1><a href="/"><img src="/images/choosenearme-logo.png"></a></h1>
-            </div> 
-            <div data-role="content">
-                <ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="b">
-                    <li><a href="#map">Find DonorsChoose schools nearby</a></li>
-                    <li><a href="/api/auth" rel="external">Auth with foursquare api</a></li>
-                </ul> 
-            </div> 
-        </div> 
-
         <div data-role="page" data-theme="b" id="map"> 
             <div data-role="header">
                 <h1><a href="/"><img src="/images/choosenearme-logo.png"></a></h1>
             </div> 
             <div data-role="content" >
+                <div id="check-in-info"></div>
                 <div id="map-canvas-container" class="box_round">
                     <div id="map_canvas" style="width: 100%; height: 100%"></div>
+                    <ul class="nav">
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">ABOUT</a></li>
+                        <li><a href="/api/auth" rel="external">CONNECT WITH <img src="/images/foursquare-logo.png" width="80" style="vertical-align:middle;"></a></li>
+                    </ul>
                 </div>
             </div> 
         </div> 
@@ -54,7 +48,7 @@
             <div data-role="header">
                 <h1><a href="/"><img src="/images/choosenearme-logo.png"></a></h1>
             </div> 
-            <div  data-role="content" id="check-in-info">
+            <div  data-role="content" >
             </div> 
 
         </div> 
@@ -85,6 +79,20 @@
                 </div>
                 <img src="${imageURL}" class="bubble-image"/>
             </div>
+        </script>
+        <script type="text/javascript">
+
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-5978320-7']);
+          _gaq.push(['_setDomainName', '.choosenear.me']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
         </script>
     </body>
 </html>

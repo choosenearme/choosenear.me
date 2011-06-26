@@ -1,6 +1,7 @@
 package choosenearme
 
 import net.liftweb.json.DefaultFormats
+import org.scala_tools.time.Imports._
 
 case class SelfApiResponse(response: SelfApiResponseBody)
 case class SelfApiResponseBody(user: UserApiResponse)
@@ -12,7 +13,7 @@ case class CheckinsHistoryResponseBody(checkins: CheckinsHistoryMoreResponseBody
 case class CheckinsHistoryMoreResponseBody(count: Int, items: List[CheckinDetail])
 case class CheckinDetail(createdAt: Long, venue: VenueDetail)
 case class VenueDetail(name: String, shout: Option[String], location: VenueLocation, categories: List[ParentCategory])
-case class VenueLocation(address: String, crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
+case class VenueLocation(address: Option[String], crossStreet: Option[String], city: String, state: String, postalCode: Option[String], country: Option[String], lat: Double, lng: Double)
 
 case class CategoriesResponse(response: CategoriesResponseBody)
 case class CategoriesResponseBody(categories: List[ParentCategory])
@@ -38,14 +39,16 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     get(endpoint, params).map(_.extract[SelfApiResponse])
   }
 
-  def checkinsUntyped = {
+  def checkinsUntyped(since: Option[DateTime] = None, limit: Option[Int] = Some(50)) = {
     val endpoint = "/v2/users/self/checkins"
     val params =
       Map(
-        "oauth_token" -> AccessToken)
-      get(endpoint, params)
+        "oauth_token" -> AccessToken) ++ (since map { s =>
+        "afterTimestamp" -> (s.millis / 1000).toString })
+    get(endpoint, params)
   }
 
+<<<<<<< HEAD
   def categories = {
 	val endpoint = "/v2/venues/categories"
 	val params =
@@ -55,4 +58,7 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
   }
 
   def checkins = checkinsUntyped.map(_.extract[CheckinsHistoryResponse])
+=======
+  def checkins = checkinsUntyped(since = None).map(_.extract[CheckinsHistoryResponse])
+>>>>>>> 92456b411d3b4a55db097b114a8df3314ea3f010
 }

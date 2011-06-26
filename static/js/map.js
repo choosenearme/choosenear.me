@@ -29,10 +29,18 @@ $(function(){
         if(getUrlVars()["secret"] != undefined){
             $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
                     var checkins = data.response.response.checkins.items;
+                    console.log(checkins)
                     for(var i = 0, len = checkins.length;i<len;i++){
-                        $("#check-in-info").append("<p>"+checkins[i].venue.name+"</p>");
-                        $.mobile.changePage("check-ins");
+                        var venueLocation = checkins[i].venue.location;
+                        $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+"</p>");
                     }
+                    $("#check-in-info p").live("click",function(){
+                            var el = $(this);
+                            var lat = parseFloat(el.data("lat"));
+                            var lng = parseFloat(el.data("lng"));
+                            CNM.currentPosition = new google.maps.LatLng(lat, lng);
+                            window.setMapPosition();
+                        });
                 });
         }
         createMap();
