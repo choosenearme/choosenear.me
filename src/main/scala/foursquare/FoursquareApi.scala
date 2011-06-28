@@ -65,7 +65,7 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     for {
       selfInfo <- self
       val numCheckins = selfInfo.response.user.checkins.count
-      val pages = (0 until (numCheckins / limit)).toList
+      val pages = (0 to (numCheckins / limit)).toList
       checkinPages <- Future.collect(pages.map(checkinsForPage))
     } yield checkinPages.flatten.toSet.toList
   }
