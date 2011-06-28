@@ -21,7 +21,7 @@ object Server {
     // httpLogger.setLevel(Level.ALL)
 
     val mongoPool = Executors.newFixedThreadPool(4)
-    val userDb = new MongoUserDb(FuturePool(mongoPool))
+    val db = new MongoDb(FuturePool(mongoPool))
 
     val foursquareApi = new FoursquareApi
     val foursquareAuthApi = new FoursquareAuthenticationApi(config.foursquare)
@@ -30,14 +30,14 @@ object Server {
 
     val restFilter = new RestApiFilter
 
-    val authService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, userDb)
+    val authService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, db)
     val locationService = new LocationService(donorschooseApi)
-    val userService = new UserService(foursquareApi, userDb)
-    val checkinsService = new CheckinsService(foursquareApi, userDb)
-    val checkinService = new CheckinService(donorschooseApi, foursquareApi, twilioApi, userDb)
-    val categoriesService = new CategoriesService(foursquareApi, userDb)
+    val userService = new UserService(foursquareApi, db)
+    val checkinsService = new CheckinsService(foursquareApi, db)
+    val checkinService = new CheckinService(donorschooseApi, foursquareApi, twilioApi, db)
+    val categoriesService = new CategoriesService(foursquareApi, db)
     val pingService = new PingService
-    val citiesService = new CitiesService(userDb, foursquareApi)
+    val citiesService = new CitiesService(db, foursquareApi)
 
     val service = restFilter andThen RestApiRouter {
       case "auth" :: _ => authService

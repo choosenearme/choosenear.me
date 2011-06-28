@@ -3,24 +3,22 @@ package choosenearme
 import com.twitter.util.Future
 import net.liftweb.json.JsonAST.{JValue, JObject, JField, JString, JInt, JArray, JDouble}
 
-case class City(name: String, latlng: LatLng)
-
-class CitiesService(userDb: UserDb, foursquare: FoursquareApi) extends RestApiService {
-  private def latlngForCheckin(checkin: CheckinDetail): Option[LatLng] =
+class CitiesService(db: Db, foursquare: FoursquareApi) extends RestApiService {
+  private def latlngForCheckin(checkin: CheckinDetail): Option[LatLong] =
     checkin.venue.map(v => {
       val loc = v.location
-      LatLng(loc.lat, loc.lng)
+      LatLong(loc.lat, loc.lng)
     })
 
-  def citiesForCheckins(checkins: List[CheckinDetail]): List[(City, Int)] = {
+  def citiesForCheckins(checkins: List[CheckinDetail]): List[City] = {
     val latlngs = checkins.flatMap(latlngForCheckin)
-    val centroids = LatLng.cluster(latlngs, 25000)
+    val centroids = LatLongUtil.cluster(latlngs, 25000)
 
     val clusteredCheckins =
       checkins.groupBy(checkin => {
         for {
           latlng <- latlngForCheckin(checkin)
-        } yield centroids.min(LatLng.near(latlng))
+        } yield centroids.min(LatLongUtil.near(latlng))
       })
 
     val cityNameHistogram =
@@ -50,9 +48,13 @@ class CitiesService(userDb: UserDb, foursquare: FoursquareApi) extends RestApiSe
       clusteredCheckins.flatMap({ case (latlng, cs) =>
         for (ll <- latlng) yield (ll, cs)
       }).map({ case (ll, cs) =>
-        (City(cityLabels(ll), ll), cs.size)
-      }).toList.sortBy(- _._2)
-    
+        (City
+          .createRecord
+          .name(cityLabels(ll))
+          .latlng(ll)
+          .numCheckins(cs.size))
+      }).toList.sortBy(- _.numCheckins.value)
+
     cityHistogram
   }
 
@@ -60,18 +62,21 @@ class CitiesService(userDb: UserDb, foursquare: FoursquareApi) extends RestApiSe
     val secret = request.params.required[String]("secret")
 
     for {
-      user <- userDb.fetchOne(User.where(_.secret eqs secret))
+      user <- db.fetchOne(User.where(_.secret eqs secret))
       val api = foursquare.authenticateUser(user)
       allCheckins <- api.allCheckins
-    } yield {
       val cities = citiesForCheckins(allCheckins)
+      // val _ = cities.foreach(_.userId(user.foursquareId.value))
+      // val _ = db.insertAll(cities)
+    } yield {
       val fields =
-        for ((city, cityCount) <- cities)
+        for (city <- cities)
           yield JObject(List(
-            JField("name", JString(city.name)),
+            JField("id", JString(city.id.toString)),
+            JField("name", JString(city.name.value)),
             JField("lat", JDouble(city.latlng.lat)),
-            JField("lng", JDouble(city.latlng.lng)),
-            JField("count", JInt(cityCount))))
+            JField("lng", JDouble(city.latlng.long)),
+            JField("count", JInt(city.numCheckins.value))))
 
       new RestApiResponse(JObject(List(JField("response", JArray(fields)))))
     }

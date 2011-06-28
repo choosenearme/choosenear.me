@@ -11,13 +11,13 @@ class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.don
     override protected def dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
   }
 
-  def near(geo: LatLng) = {
+  def near(geo: LatLong) = {
     val endpoint = "/common/json_feed.html"
     val params =
       Map(
         "APIKey" -> config.key,
         "centerLat" -> geo.lat.toString,
-        "centerLng" -> geo.lng.toString)
+        "centerLng" -> geo.long.toString)
     get(endpoint, params)
   }
 }

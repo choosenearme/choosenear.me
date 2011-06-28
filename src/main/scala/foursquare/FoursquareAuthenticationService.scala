@@ -11,7 +11,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus.{BAD_REQUEST, FOUND
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
-class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqApi: FoursquareApi, userDb: UserDb) extends RestApiService {
+class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqApi: FoursquareApi, db: Db) extends RestApiService {
   def redirectTo(uri: String): Future[RestApiResponse] = {
     Future.exception(new RestApiException("", FOUND) {
       override def postProcess(response: HttpResponse): Unit = {
@@ -36,16 +36,18 @@ class FoursquareAuthenticationService(authApi: FoursquareAuthenticationApi, fsqA
         for {
           accessToken <- authApi.auth(code)
           userInfo <- fsqApi.authenticate(accessToken).self
-          user <- (userDb.fetchOne(User.where(_.foursquareId eqs userInfo.response.user.id))
-                         .rescue {
-                           case ex: java.util.NoSuchElementException =>
-                             userDb.save(User.createRecord
-                                  .foursquareId(userInfo.response.user.id)
-                                  .foursquareToken(accessToken)
-                                  .firstName(userInfo.response.user.firstName)
-                                  .lastName(userInfo.response.user.lastName)
-                                  .email(userInfo.response.user.contact.email)
-                                  .phone(userInfo.response.user.contact.phone))
+          user <- (db.fetchOne(User.where(_.foursquareId eqs userInfo.response.user.id))
+                     .rescue {
+                       case ex: java.util.NoSuchElementException =>
+                         db.save(
+                           User
+                             .createRecord
+                             .foursquareId(userInfo.response.user.id)
+                             .foursquareToken(accessToken)
+                             .firstName(userInfo.response.user.firstName)
+                             .lastName(userInfo.response.user.lastName)
+                             .email(userInfo.response.user.contact.email)
+                             .phone(userInfo.response.user.contact.phone))
                          })
           redirect <- redirectTo("/?secret=" + user.secret.value)
         } yield {

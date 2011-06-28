@@ -4,13 +4,13 @@ import net.liftweb.json.DefaultFormats
 import net.liftweb.json.Extraction.decompose
 import net.liftweb.json.JsonAST.{JValue, JObject, JField, JString}
 
-class UserService(foursquare: FoursquareApi, userDb: UserDb) extends RestApiService {
+class UserService(foursquare: FoursquareApi, db: Db) extends RestApiService {
   implicit val formats = DefaultFormats
 
   override def get(request: RestApiRequest) = {
     val secret = request.params.required[String]("secret")
     for {
-      user <- userDb.fetchOne(User.where(_.secret eqs secret))
+      user <- db.fetchOne(User.where(_.secret eqs secret))
       val api = foursquare.authenticateUser(user)
       selfInfo <- api.self
     } yield {

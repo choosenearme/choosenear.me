@@ -14,7 +14,7 @@ case class CheckinPostCheckinDetail(venue: VenueDetail)
 class CheckinService(donorschoose: DonorsChooseApi,
                      foursquare: FoursquareApi,
                      twilio: Option[TwilioApi],
-                     userDb: UserDb) extends RestApiService {
+                     db: Db) extends RestApiService {
   implicit val formats = DefaultFormats
 
   override def post(request: RestApiRequest) = {
@@ -26,15 +26,15 @@ class CheckinService(donorschoose: DonorsChooseApi,
     val userId = response.user.id
 
     for {
-      user <- userDb.fetchOne(User.where(_.foursquareId eqs userId))
+      user <- db.fetchOne(User.where(_.foursquareId eqs userId))
       val location = response.checkin.venue.location
-      val latlng = LatLng(location.lat, location.lng)
+      val latlng = LatLong(location.lat, location.lng)
       jsonResponse <- donorschoose.near(latlng)
       val _ = println(Printer.pretty(JsonAST.render(jsonResponse)))
       val _ = println("")
       val proposals = jsonResponse.extract[DonorsChooseResponse].proposals
     } {
-      val sorted = proposals.sortBy(p => LatLng(p.latitude.toDouble, p.longitude.toDouble))(LatLng.near(latlng))
+      val sorted = proposals.sortBy(p => LatLong(p.latitude.toDouble, p.longitude.toDouble))(LatLongUtil.near(latlng))
       println(sorted)
       println("")
       // t.sms(user.phone.value, "Hi " + user.firstName + ", the nearest DonorsChoose school is " + proposal.schoolName)
