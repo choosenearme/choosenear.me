@@ -12,6 +12,7 @@ if(typeof CNM == "undefined"){
 
 navigator.geolocation.getCurrentPosition(function(position){ 
         CNM.currentPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude)
+        window.setMapPosition();
     });
 
 var createMap = function(){
@@ -41,6 +42,7 @@ $(function(){
                             CNM.currentPosition = new google.maps.LatLng(lat, lng);
                             window.setMapPosition();
                         });
+                    $("#map_canvas").css("width","700px");
                 });
         }
         createMap();
