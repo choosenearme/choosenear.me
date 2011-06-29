@@ -38,6 +38,7 @@ object Server {
     val categoriesService = new CategoriesService(foursquareApi, db)
     val pingService = new PingService
     val citiesService = new CitiesService(db, foursquareApi)
+    val cityService = new CityService(db, foursquareApi, donorschooseApi)
 
     val service = restFilter andThen RestApiRouter {
       case "auth" :: _ => authService
@@ -45,6 +46,7 @@ object Server {
       case "checkin" :: Nil => checkinService
       case "checkins" :: Nil => checkinsService
       case "cities" :: Nil => citiesService
+      case "city" :: Nil => cityService
       case "location" :: Nil => locationService
       case "ping" :: Nil => pingService
       case "user" :: Nil => userService

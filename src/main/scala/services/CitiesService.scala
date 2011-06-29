@@ -4,58 +4,19 @@ import com.twitter.util.Future
 import net.liftweb.json.JsonAST.{JValue, JObject, JField, JString, JInt, JArray, JDouble}
 
 class CitiesService(db: Db, foursquare: FoursquareApi) extends RestApiService {
-  private def latlngForCheckin(checkin: CheckinDetail): Option[LatLong] =
-    checkin.venue.map(v => {
-      val loc = v.location
-      LatLong(loc.lat, loc.lng)
-    })
-
-  def citiesForCheckins(checkins: List[CheckinDetail]): List[City] = {
-    val latlngs = checkins.flatMap(latlngForCheckin)
-    val centroids = LatLongUtil.cluster(latlngs, 25000)
-
-    val clusteredCheckins =
-      checkins.groupBy(checkin => {
-        for {
-          latlng <- latlngForCheckin(checkin)
-        } yield centroids.min(LatLongUtil.near(latlng))
-      })
-
-    val cityNameHistogram =
-      clusteredCheckins.mapValues(checkins => {
-        val cities =
-          for {
-            checkin <- checkins
-            venue <- checkin.venue
-            val loc = venue.location
-          } yield loc.city + ", " + loc.state
-        (cities
-          .groupBy(identity)
-          .mapValues(_.size)
-          .toList
-          .sortBy(- _._2))
-      })
-
-    val cityLabels =
-      cityNameHistogram.flatMap({case (latlng, cities) =>                                         
-        for {
-          ll <- latlng
-          (city, _) <- cities.headOption
-        } yield (ll, city)
-      })
-
-    val cityHistogram =
-      clusteredCheckins.flatMap({ case (latlng, cs) =>
-        for (ll <- latlng) yield (ll, cs)
-      }).map({ case (ll, cs) =>
-        (City
-          .createRecord
-          .name(cityLabels(ll))
-          .latlng(ll)
-          .numCheckins(cs.size))
-      }).toList.sortBy(- _.numCheckins.value)
-
-    cityHistogram
+  private def getCities(user: User)(cities: List[City]): Future[List[City]] = cities match {
+    case Nil =>
+      val api = foursquare.authenticateUser(user)
+      for {
+        allCheckins <- api.allCheckins
+      } yield {
+        val dbCheckins = allCheckins.flatMap(Checkin.fromCheckinDetail(user))
+        val cities = City.citiesForCheckins(user)(allCheckins)
+        db.insertAll(dbCheckins)
+        db.insertAll(cities)
+        cities
+      }
+    case cs => Future(cs)
   }
 
   override def get(request: RestApiRequest) = {
@@ -63,11 +24,7 @@ class CitiesService(db: Db, foursquare: FoursquareApi) extends RestApiService {
 
     for {
       user <- db.fetchOne(User.where(_.secret eqs secret))
-      val api = foursquare.authenticateUser(user)
-      allCheckins <- api.allCheckins
-      val cities = citiesForCheckins(allCheckins)
-      // val _ = cities.foreach(_.userId(user.foursquareId.value))
-      // val _ = db.insertAll(cities)
+      cities <- db.fetch(City.where(_.userId eqs user.foursquareId.value).orderDesc(_.numCheckins)).flatMap(getCities(user))
     } yield {
       val fields =
         for (city <- cities)
