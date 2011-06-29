@@ -16,7 +16,7 @@ class JsonApiClient(host: String, port: Int = 80) {
   def clientBuilder =
     (ClientBuilder()
       .codec(Http)
-      .connectionTimeout(Duration(1, TimeUnit.SECONDS))
+      .connectionTimeout(Duration(10, TimeUnit.SECONDS))
       .hosts(host + ":" + port)
       .hostConnectionLimit(10))
 
