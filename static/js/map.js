@@ -30,7 +30,6 @@ $(function(){
         if(getUrlVars()["secret"] != undefined){
             $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
                     var checkins = data.response.response.checkins.items;
-                    console.log(checkins)
                     for(var i = 0, len = checkins.length;i<len;i++){
                         var venueLocation = checkins[i].venue.location;
                         $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+"</p>");
@@ -42,7 +41,7 @@ $(function(){
                             CNM.currentPosition = new google.maps.LatLng(lat, lng);
                             window.setMapPosition();
                         });
-                    $("#map_canvas").css("width","700px");
+                    $("#map_canvas").css("width","655px");
                 });
         }
         createMap();
