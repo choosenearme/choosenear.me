@@ -30,9 +30,11 @@ $(function(){
         if(getUrlVars()["secret"] != undefined){
             $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
                     var checkins = data.response.response.checkins.items;
-                    for(var i = 0, len = checkins.length;i<len;i++){
+                    $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
+                    for(var i = 0, len = checkins.length;i<6;i++){
                         var venueLocation = checkins[i].venue.location;
-                        $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+"</p>");
+                        $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
+                          "<br /><span class=\"crossStreet\">"+checkins[i].venue.location.crossStreet+"</span></p>");
                     }
                     $("#check-in-info p").live("click",function(){
                             var el = $(this);
@@ -41,7 +43,8 @@ $(function(){
                             CNM.currentPosition = new google.maps.LatLng(lat, lng);
                             window.setMapPosition();
                         });
-                    $("#map_canvas").css("width","655px");
+                    $("#map_canvas").css("width","620px");
+                    window.setMapPosition();
                 });
         }
         createMap();
