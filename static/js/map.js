@@ -46,7 +46,7 @@ $(function(){
                         var checkins = data.response.checkins;
                         $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
                         for(var i = 0, len = checkins.length;i<6;i++){
-                            $("#check-in-info").append("<p data-lng='"+checkins[i].lng+"' data-lat='"+checkins[i].lat+"'>"+checkins[i].venuename+
+                            $("#check-in-info").append("<p class='"+checkins[i].id+"' data-lng='"+checkins[i].lng+"' data-lat='"+checkins[i].lat+"'>"+checkins[i].venuename+
                               "<br /><span class=\"crossStreet\">"+checkins[i].venuename+"</span></p>");
                         }
                     });
@@ -57,15 +57,16 @@ $(function(){
                 $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
                 for(var i = 0, len = checkins.length;i<6;i++){
                     var venueLocation = checkins[i].venue.location;
-                    $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
+                    $("#check-in-info").append("<p class='"+checkins[i].id+"' data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
                       "<br /><span class=\"crossStreet\">"+checkins[i].venue.location.crossStreet+"</span></p>");
                 }
                 $("#check-in-info p").live("click",function(){
                     var el = $(this);
                     var lat = parseFloat(el.data("lat"));
                     var lng = parseFloat(el.data("lng"));
+                    var checkinId = el.attr("class");
                     CNM.currentPosition = new google.maps.LatLng(lat, lng);
-                    window.setMapPosition();
+                    window.setMapPosition(checkinId);
                 });
                 $("#map_canvas").css("width","620px");
             });
@@ -87,7 +88,7 @@ $(function(){
                     $("#proposal-info").html($("#more-information-template").tmpl(currentProposal));
                 }
             });
-        window.setMapPosition = function setMapPosition() 
+        window.setMapPosition = function setMapPosition(checkinId) 
         {
             CNM.markers.clear();
             var marker = new google.maps.Marker({
@@ -99,29 +100,46 @@ $(function(){
             google.maps.event.trigger(CNM.map, 'resize');
             CNM.map.setCenter(CNM.currentPosition);
             var jsonpUrl = "/api/location?latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
-            if (getUrlVars()["secret"])
-            {
+            if (getUrlVars()["secret"]){
               jsonpUrl = "/api/city?secret="+getUrlVars()["secret"]+"&latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
             }
             var script = document.createElement("script");
             script.src = jsonpUrl;
             document.getElementsByTagName("head")[0].appendChild(script);
 
-            var markerImage = new google.maps.MarkerImage("/images/marker.png")
-            var recommendedMarkerImage = new google.maps.MarkerImage("/images/recommended-marker.png")
             var infoWindow = new google.maps.InfoWindow();
 
             window.handleDonorsChooseData = function(data){
                 var proposals = "";
-                if (getUrlVars()["secret"])
-                {
+                var matchingProposals = [];
+                if (getUrlVars()["secret"]){
                   proposals = window.proposals = data.response.proposals;
+                  var checkins = data.response.checkins;
+                  var clickedCheckin = "";
+                  var foo = checkinId;
+                  for (var i = 0, len = checkins.length;i<len;i++){
+                      if(checkins[i].id == checkinId)
+                      {
+                        clickedCheckin = checkins[i];
+                        if (clickedCheckin.matchingProposals){
+                          matchingProposals += clickedCheckin.matchingProposals;
+                        }
+                      }
+                  }
+
                 } else {
                   proposals = window.proposals = data.proposals.proposals;
+                  
                 }
                 saveProposals(proposals);
+                var markerImage = "";
                 for(var i = 0, len = proposals.length;i<len;i++){
                     var proposal = proposals[i];
+                    if ($.inArray(proposal.id, matchingProposals) > -1){
+                      markerImage = new google.maps.MarkerImage("/images/recommended-marker.png")
+                    } else {
+                      markerImage = new google.maps.MarkerImage("/images/marker.png")
+                    }
                     var proposalLatLng = new google.maps.LatLng(parseFloat(proposal.latitude, 10), parseFloat(proposal.longitude, 10));
                     var marker = new google.maps.Marker({
                             position: proposalLatLng, 
