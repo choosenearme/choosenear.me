@@ -10,6 +10,7 @@ body{background:url(/images/lines.gif), url(/images/background.gif);height:100%;
 .min-width-320px #map-canvas-container{width:300px;height:500px;}
 .min-width-480px #map-canvas-container{width:450px;height:500px;}
 .min-width-1024px #map-canvas-container{width:900px;height:500px;margin:auto;}
+#map_canvas{clear:right;}
 
 
 ul.nav{float:right;margin-right:5px;}
@@ -78,7 +79,8 @@ ul.nav{float:right;margin-right:5px;}
    border-top-color: #1b435e;
    background: #1b435e;
    }
-   
-#check-in-info{float:left;margin-right:37px;max-width:210px;padding-left:20px;}
+
+.ui-select{display:none;float:right;width:636px;}
+#check-in-info{clear:left;float:left;margin-right:37px;min-width:205px;max-width:205px;padding-left:20px;}
 #check-in-info p{border-left:1px solid #17BBE1;padding:5px;color:#FFFFFF;cursor:pointer;margin:25px 0px;}
 #check-in-info p span.crossStreet{color:#DEDEDE;font-size:8pt;font-weight:bold;}

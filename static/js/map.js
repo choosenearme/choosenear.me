@@ -28,24 +28,47 @@ var createMap = function(){
 
 $(function(){
         if(getUrlVars()["secret"] != undefined){
+            $.getJSON("/api/cities?secret="+getUrlVars()["secret"], function(data){
+                var cities = data.response;
+                for(var i = 0, len = cities.length;i<len;i++){
+                    var city = cities[i];
+                    $("#cities").append("<option value='"+city.lat+","+city.lng+"'>"+city.name+"</option>");
+                }
+                $(".ui-select").css("display", "block");
+                $(".ui-btn-text").append("choose your city");
+
+                $("#cities").change(function(){
+                    var el = $(this);
+                    var latlng = $(this).val()
+                    var lls = latlng;
+                    $.getJSON("/api/city?secret="+getUrlVars()["secret"]+"&latlng="+latlng, function(data){
+                        $("#check-in-info").empty();
+                        var checkins = data.response.checkins;
+                        $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
+                        for(var i = 0, len = checkins.length;i<6;i++){
+                            $("#check-in-info").append("<p data-lng='"+checkins[i].lng+"' data-lat='"+checkins[i].lat+"'>"+checkins[i].venuename+
+                              "<br /><span class=\"crossStreet\">"+checkins[i].venuename+"</span></p>");
+                        }
+                    });
+                });
+            });
             $.getJSON("/api/checkins?secret="+getUrlVars()["secret"], function(data){
-                    var checkins = data.response.response.checkins.items;
-                    $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
-                    for(var i = 0, len = checkins.length;i<6;i++){
-                        var venueLocation = checkins[i].venue.location;
-                        $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
-                          "<br /><span class=\"crossStreet\">"+checkins[i].venue.location.crossStreet+"</span></p>");
-                    }
-                    $("#check-in-info p").live("click",function(){
-                            var el = $(this);
-                            var lat = parseFloat(el.data("lat"));
-                            var lng = parseFloat(el.data("lng"));
-                            CNM.currentPosition = new google.maps.LatLng(lat, lng);
-                            window.setMapPosition();
-                        });
-                    $("#map_canvas").css("width","620px");
+                var checkins = data.response.response.checkins.items;
+                $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
+                for(var i = 0, len = checkins.length;i<6;i++){
+                    var venueLocation = checkins[i].venue.location;
+                    $("#check-in-info").append("<p data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
+                      "<br /><span class=\"crossStreet\">"+checkins[i].venue.location.crossStreet+"</span></p>");
+                }
+                $("#check-in-info p").live("click",function(){
+                    var el = $(this);
+                    var lat = parseFloat(el.data("lat"));
+                    var lng = parseFloat(el.data("lng"));
+                    CNM.currentPosition = new google.maps.LatLng(lat, lng);
                     window.setMapPosition();
                 });
+                $("#map_canvas").css("width","620px");
+            });
         }
         createMap();
         $("#map").live("pageshow", function(event){
@@ -68,7 +91,7 @@ $(function(){
         {
             CNM.markers.clear();
             var marker = new google.maps.Marker({
-                    position: CNM.currentPosition, 
+                    position: CNM.currentPosition,
                     map: CNM.map, 
                     title:"This is where you are",
                 });   
@@ -76,15 +99,26 @@ $(function(){
             google.maps.event.trigger(CNM.map, 'resize');
             CNM.map.setCenter(CNM.currentPosition);
             var jsonpUrl = "/api/location?latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
+            if (getUrlVars()["secret"])
+            {
+              jsonpUrl = "/api/city?secret="+getUrlVars()["secret"]+"&latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
+            }
             var script = document.createElement("script");
             script.src = jsonpUrl;
             document.getElementsByTagName("head")[0].appendChild(script);
 
             var markerImage = new google.maps.MarkerImage("/images/marker.png")
+            var recommendedMarkerImage = new google.maps.MarkerImage("/images/recommended-marker.png")
             var infoWindow = new google.maps.InfoWindow();
 
             window.handleDonorsChooseData = function(data){
-                var proposals = window.proposals = data.proposals.proposals;
+                var proposals = "";
+                if (getUrlVars()["secret"])
+                {
+                  proposals = window.proposals = data.response.proposals;
+                } else {
+                  proposals = window.proposals = data.proposals.proposals;
+                }
                 saveProposals(proposals);
                 for(var i = 0, len = proposals.length;i<len;i++){
                     var proposal = proposals[i];
@@ -130,6 +164,18 @@ $(function(){
 
         } 
     });
+    
+function getCheckinsFromLocation(latlng){
+  $.getJSON("/api/checkins?secret="+getUrlVars()["secret"]+"&latlng="+latlng, function(data){
+      return data.response.response.checkins.items; 
+  });
+}
+
+function getProposalsFromCity(latlng){
+  $.getJSON("/api/city?secret="+getUrlVars()["secret"]+"&latlng="+latlng, function(data){
+      return data.response.proposals; 
+  });
+}
 
 function saveProposals(proposals){
     if('localStorage' in window && window['localStorage'] !== null){
