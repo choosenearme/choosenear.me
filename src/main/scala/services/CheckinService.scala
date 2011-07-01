@@ -31,10 +31,6 @@ class CheckinService(donorschoose: DonorsChooseApi,
       val checkinCategories = checkin.categories.value
       val matchingSubjects = checkinCategories.flatMap(category => CategoryUtil.matchingMap.get(category)).flatten
       val matchingProposals = proposals.filter(proposal => matchingSubjects.contains(proposal.subject.name)).groupBy(_.id)
-      if (!matchingProposals.isEmpty) {
-        println("Found matches!")
-        println(matchingProposals)
-      }
 
       val transformedJson = 
         proposalsJson transform {

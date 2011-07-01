@@ -12,13 +12,7 @@ class CityService(db: Db, foursquare: FoursquareApi, donorschoose: DonorsChooseA
     val matchingProposals = proposals.filter(proposal => matchingSubjects.contains(proposal.subject.name))
     val matchingProposalsJson =
       if (matchingProposals.isEmpty) JNothing
-      else {
-        println("WOOT! Found a match!")
-        println(checkin)
-        println(matchingProposals)
-        println("")
-        JArray(matchingProposals.map(proposal => JString(proposal.id)))
-      }
+      else JArray(matchingProposals.map(proposal => JString(proposal.id)))
 
     JObject(List(
       JField("id", JString(checkin.id.toString)),
