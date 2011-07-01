@@ -135,7 +135,7 @@ $(function(){
                 var markerImage = "";
                 for(var i = 0, len = proposals.length;i<len;i++){
                     var proposal = proposals[i];
-                    if ($.inArray(proposal.id, matchingProposals) > -1){
+                    if (matchingProposals.indexOf(proposal.id) > -1){
                       markerImage = new google.maps.MarkerImage("/images/recommended-marker.png")
                     } else {
                       markerImage = new google.maps.MarkerImage("/images/marker.png")
