@@ -1,6 +1,7 @@
 package choosenearme
 
 import com.twitter.finagle.builder.{ClientBuilder, Http}
+import com.twitter.finagle.stats.OstrichStatsReceiver
 import com.twitter.util.{Duration, Future}
 import java.net.URLEncoder.encode
 import java.util.concurrent.TimeUnit
@@ -16,9 +17,10 @@ class JsonApiClient(host: String, port: Int = 80) {
   def clientBuilder =
     (ClientBuilder()
       .codec(Http)
-      .connectionTimeout(Duration(10, TimeUnit.SECONDS))
+      .connectionTimeout(Duration(1, TimeUnit.SECONDS))
       .hosts(host + ":" + port)
-      .hostConnectionLimit(10))
+      .hostConnectionLimit(10)
+      .reportTo(new OstrichStatsReceiver))
 
   val client = clientBuilder.build()
 

@@ -2,6 +2,9 @@ package choosenearme
 
 import com.mongodb.Mongo
 import com.twitter.finagle.builder.{Http, ServerBuilder}
+import com.twitter.finagle.stats.OstrichStatsReceiver
+import com.twitter.ostrich.admin.config.{AdminServiceConfig, StatsConfig, TimeSeriesCollectorConfig}
+import com.twitter.ostrich.admin.{RuntimeEnvironment}
 import com.twitter.util.FuturePool
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
@@ -22,6 +25,15 @@ object Server {
 
     val mongoPool = Executors.newFixedThreadPool(4)
     val db = new MongoDb(FuturePool(mongoPool))
+
+    val ostrichAdmin = new AdminServiceConfig {
+      httpPort = 22557
+      statsNodes = new StatsConfig {
+        reporters = new TimeSeriesCollectorConfig
+      }
+    }
+    val runtime = RuntimeEnvironment(this, Array())
+    val ostrich = ostrichAdmin()(runtime)
 
     val foursquareApi = new FoursquareApi
     val foursquareAuthApi = new FoursquareAuthenticationApi(config.foursquare)
@@ -56,6 +68,7 @@ object Server {
       (ServerBuilder()
         .codec(Http)
         .bindTo(new InetSocketAddress(8080))
+        .reportTo(new OstrichStatsReceiver)
         .build(service))
   }
 }
