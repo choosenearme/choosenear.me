@@ -80,7 +80,10 @@ ul.nav{float:right;margin-right:5px;}
    background: #1b435e;
    }
 
-.ui-select{display:none;float:right;width:636px;}
-#check-in-info{clear:left;float:left;margin-right:37px;min-width:205px;max-width:205px;padding-left:20px;}
+.ui-select{display:none;float:right;width:672px;}
+#check-in-info{clear:left;float:left;margin:0 7px 0 0;min-width:205px;max-width:205px;padding-left:20px;overflow:auto;max-height:515px;}
 #check-in-info p{border-left:1px solid #17BBE1;padding:5px;color:#FFFFFF;cursor:pointer;margin:25px 0px;}
 #check-in-info p span.crossStreet{color:#DEDEDE;font-size:8pt;font-weight:bold;}
+#about{margin:0 auto;width:650px;}
+#about p{color:#FFFFFF;font-size:11pt;}
+.recommended{color:#fff000;font-size:11px;font-weight:bold;}

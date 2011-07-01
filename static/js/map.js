@@ -39,15 +39,15 @@ $(function(){
 
                 var fetchCity = function(latlng) {
                     $.getJSON("/api/city?secret="+getUrlVars()["secret"]+"&latlng="+latlng, function(data){
-                        $("#map_canvas").css("width","620px");
+                        $("#map_canvas").css("width","650px");
                         $("#check-in-info").empty();
                         var checkins = data.response.checkins;
                         $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
-                        for(var i = 0, len = checkins.length;i<7;i++){
+                        for(var i = 0, len = checkins.length;i<len;i++){
                             var checkin = checkins[i];
                             var recommended = ""
                             if ((checkin.matchingProposals || []).length > 0) {
-                                recommended = "<span class=\"recommended\">recommended</span>"
+                                recommended = "<br /><span class=\"recommended\">&rarr; recommended projects</span>"
                             }
                             $("#check-in-info").append("<p class='"+checkin.id+"' data-lng='"+checkin.lng+"' data-lat='"+checkin.lat+"'>"+checkin.venuename+
                               "<br /><span class=\"crossStreet\">"+(checkin.crossStreet || "")+"</span>"+recommended+"</p>");
