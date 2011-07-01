@@ -23,6 +23,7 @@ class CityService(db: Db, foursquare: FoursquareApi, donorschoose: DonorsChooseA
     JObject(List(
       JField("id", JString(checkin.id.toString)),
       JField("venuename", JString(checkin.venuename.value)),
+      JField("crossStreet", JString(checkin.crossStreet.value)),
       JField("lat", JDouble(checkin.latlng.lat)),
       JField("lng", JDouble(checkin.latlng.long)),
       JField("categories", JArray(checkin.categories.value.map(JString.apply))),

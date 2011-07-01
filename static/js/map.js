@@ -47,7 +47,7 @@ $(function(){
                         $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
                         for(var i = 0, len = checkins.length;i<6;i++){
                             $("#check-in-info").append("<p class='"+checkins[i].id+"' data-lng='"+checkins[i].lng+"' data-lat='"+checkins[i].lat+"'>"+checkins[i].venuename+
-                              "<br /><span class=\"crossStreet\">"+checkins[i].venuename+"</span></p>");
+                              "<br /><span class=\"crossStreet\">"+(checkins[i].crossStreet || "")+"</span></p>");
                         }
                     });
                 });
@@ -58,7 +58,7 @@ $(function(){
                 for(var i = 0, len = checkins.length;i<6;i++){
                     var venueLocation = checkins[i].venue.location;
                     $("#check-in-info").append("<p class='"+checkins[i].id+"' data-lng='"+venueLocation.lng+"' data-lat='"+venueLocation.lat+"'>"+checkins[i].venue.name+
-                      "<br /><span class=\"crossStreet\">"+checkins[i].venue.location.crossStreet+"</span></p>");
+                      "<br /><span class=\"crossStreet\">"+(checkins[i].venue.location.crossStreet || "")+"</span></p>");
                 }
                 $("#check-in-info p").live("click",function(){
                     var el = $(this);
@@ -100,7 +100,7 @@ $(function(){
             google.maps.event.trigger(CNM.map, 'resize');
             CNM.map.setCenter(CNM.currentPosition);
             var jsonpUrl = "/api/location?latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
-            if (getUrlVars()["secret"]){
+            if (getUrlVars()["secret"] && checkinId){
               jsonpUrl = "/api/checkin?secret="+getUrlVars()["secret"]+"&checkinId="+checkinId+"&callback=handleDonorsChooseData";
             }
             var script = document.createElement("script");

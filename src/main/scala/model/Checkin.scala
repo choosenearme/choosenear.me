@@ -10,6 +10,7 @@ class Checkin extends MongoRecord[Checkin] with MongoId[Checkin] {
 
   object userId extends StringField(this, 100)
   object venuename extends StringField(this, 100)
+  object crossStreet extends StringField(this, 100)
   object latlng extends MongoPoint(this)
   object categories extends MongoListField[Checkin, String](this)
 }
@@ -22,6 +23,7 @@ object Checkin extends Checkin with MongoMetaRecord[Checkin] {
         ._id(new ObjectId(checkinDetail.id))
         .userId(user.foursquareId.value)
         .venuename(venue.name)
+        .crossStreet(venue.location.crossStreet)
         .latlng(LatLong(venue.location.lat, venue.location.lng))
         .categories(CategoryUtil.categoriesForCheckin(checkinDetail)))
     }
