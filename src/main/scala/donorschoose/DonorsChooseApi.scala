@@ -1,5 +1,6 @@
 package choosenearme
 
+import com.twitter.util.Future
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -34,8 +35,15 @@ class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.don
   }
 
   def within(center: LatLong, radiusInMeters: Double) = {
-    val max = 50
-    val index = 0
+    val pages = (0 until 5).toList
+    for {
+      checkinPages <- Future.collect(pages.map(withinPage(center, radiusInMeters)))
+    } yield checkinPages.map(_ \ "proposals").reduceLeft(_ ++ _)
+  }
+
+  def withinPage(center: LatLong, radiusInMeters: Double)(page: Int) = {
+    val maxPerPage = 50
+    val index = page*maxPerPage
     val radius = radiusInMeters * 0.000621371192 // in miles
     val endpoint = "/common/json_feed.html"
     val params = 
@@ -44,7 +52,7 @@ class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.don
         "centerLat" -> center.lat.toString,
         "centerLng" -> center.long.toString,
         "radius" -> radius.toString,
-        "max" -> max.toString,
+        "max" -> maxPerPage.toString,
         "index" -> index.toString)
     get(endpoint, params)
   }

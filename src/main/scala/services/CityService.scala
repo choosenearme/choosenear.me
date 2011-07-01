@@ -42,7 +42,7 @@ class CityService(db: Db, foursquare: FoursquareApi, donorschoose: DonorsChooseA
       // Wait for both queries to complete
       (checkins, proposalsJson) <- (checkinsF join proposalsF)
     } yield {
-      val proposals = proposalsJson.extract[DonorsChooseResponse].proposals
+      val proposals = proposalsJson.extract[List[DonorsChooseProposal]]
       val checkinFields = checkins.map(jsonForCheckin(proposals))
       val response =
         JObject(List(
