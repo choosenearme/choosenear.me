@@ -1,5 +1,7 @@
 package choosenearme
 
+import org.bson.types.ObjectId
+
 trait Parser[T] {
   def apply(x: String): Option[T]
   def unapply(x: String): Option[T] = apply(x)
@@ -18,5 +20,10 @@ object Parser {
         case ex: NumberFormatException => None
       }
     }
+  }
+
+  implicit object ObjectIdParser extends Parser[ObjectId] {
+    override def apply(x: String): Option[ObjectId] = 
+      if (ObjectId.isValid(x)) Some(new ObjectId(x)) else None
   }
 }

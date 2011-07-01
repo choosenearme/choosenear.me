@@ -101,7 +101,7 @@ $(function(){
             CNM.map.setCenter(CNM.currentPosition);
             var jsonpUrl = "/api/location?latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
             if (getUrlVars()["secret"]){
-              jsonpUrl = "/api/city?secret="+getUrlVars()["secret"]+"&latlng="+CNM.currentPosition.lat()+","+CNM.currentPosition.lng()+"&callback=handleDonorsChooseData";
+              jsonpUrl = "/api/checkin?secret="+getUrlVars()["secret"]+"&checkinId="+checkinId+"&callback=handleDonorsChooseData";
             }
             var script = document.createElement("script");
             script.src = jsonpUrl;
@@ -110,32 +110,12 @@ $(function(){
             var infoWindow = new google.maps.InfoWindow();
 
             window.handleDonorsChooseData = function(data){
-                var proposals = "";
-                var matchingProposals = [];
-                if (getUrlVars()["secret"]){
-                  proposals = window.proposals = data.response.proposals;
-                  var checkins = data.response.checkins;
-                  var clickedCheckin = "";
-                  var foo = checkinId;
-                  for (var i = 0, len = checkins.length;i<len;i++){
-                      if(checkins[i].id == checkinId)
-                      {
-                        clickedCheckin = checkins[i];
-                        if (clickedCheckin.matchingProposals){
-                          matchingProposals += clickedCheckin.matchingProposals;
-                        }
-                      }
-                  }
-
-                } else {
-                  proposals = window.proposals = data.proposals.proposals;
-                  
-                }
+                proposals = window.proposals = data.proposals.proposals;
                 saveProposals(proposals);
                 var markerImage = "";
                 for(var i = 0, len = proposals.length;i<len;i++){
                     var proposal = proposals[i];
-                    if (matchingProposals.indexOf(proposal.id) > -1){
+                    if (proposal.matchesCheckin) {
                       markerImage = new google.maps.MarkerImage("/images/recommended-marker.png")
                     } else {
                       markerImage = new google.maps.MarkerImage("/images/marker.png")
