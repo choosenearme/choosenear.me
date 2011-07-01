@@ -45,7 +45,7 @@ $(function(){
                         $("#check-in-info").empty();
                         var checkins = data.response.checkins;
                         $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
-                        for(var i = 0, len = checkins.length;i<6;i++){
+                        for(var i = 0, len = checkins.length;i<7;i++){
                             $("#check-in-info").append("<p class='"+checkins[i].id+"' data-lng='"+checkins[i].lng+"' data-lat='"+checkins[i].lat+"'>"+checkins[i].venuename+
                               "<br /><span class=\"crossStreet\">"+(checkins[i].crossStreet || "")+"</span></p>");
                         }
