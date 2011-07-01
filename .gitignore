@@ -1,2 +1,4 @@
 target/
 project/boot/
+src/main/resources/ProdConfig.scala
+src/main/resources/DevConfig.scala
