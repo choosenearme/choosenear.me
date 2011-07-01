@@ -40,6 +40,13 @@ $(function(){
                 var fetchCity = function(latlng) {
                     $.getJSON("/api/city?secret="+getUrlVars()["secret"]+"&latlng="+latlng, function(data){
                         $("#map_canvas").css("width","650px");
+
+                        var ll = latlng.split(',');
+                        var lat = parseFloat(ll[0]);
+                        var lng = parseFloat(ll[1]);
+                        CNM.currentPosition = new google.maps.LatLng(lat, lng)
+                        window.setMapPosition()
+
                         $("#check-in-info").empty();
                         var checkins = data.response.checkins;
                         $("#check-in-info").append("<p data-lng='"+CNM.currentPosition.lng()+"' data-lat='"+CNM.currentPosition.lat()+"'>Current Position</p>");
