@@ -25,13 +25,16 @@ class CheckinService(donorschoose: DonorsChooseApi,
     for {
       user <- db.fetchOne(User.where(_.secret eqs secret))
       checkin <- db.fetchOne(Checkin.where(_.userId eqs user.foursquareId.value).and(_._id eqs id))
-      proposalsJson <- donorschoose.near(checkin.latlng.value)
-    } yield {
-      val proposals = proposalsJson.extract[DonorsChooseResponse].proposals
+      val latlng = checkin.latlng.value
       val checkinCategories = checkin.categories.value
       val matchingSubjects = checkinCategories.flatMap(category => CategoryUtil.matchingMap.get(category)).flatten
+      val responses = donorschoose.near(latlng) :: matchingSubjects.map(subject => donorschoose.nearKeyword(latlng, subject))
+      jsonResponses <- Future.collect(responses)
+    } yield {
+      val proposals = jsonResponses.flatMap(_.extract[DonorsChooseResponse].proposals)
       val matchingProposals = proposals.filter(proposal => matchingSubjects.contains(proposal.subject.name)).groupBy(_.id)
 
+      val proposalsJson = JObject(List(JField("proposals", jsonResponses.map(_ \ "proposals").reduceLeft(_ ++ _))))
       val transformedJson = 
         proposalsJson transform {
           case JObject(List(JField("id", JString(id)), fields @ _*)) if matchingProposals.contains(id) =>
