@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="robots" content="all" /> 
+        <link rel="icon" type="image/png" href="favicon.png" />
+
+        <title>choosenear.me</title>
+        <link rel="stylesheet" href="/css/jquery.mobile-1.0b1.min.css" />
+        <link rel="stylesheet" href="/css/style.css" />
+        <script src="/js/jquery-1.6.1.min.js"></script>
+        <script src="/js/jquery.mobile-1.0b1.min.js"></script>
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="/js/utils.js"></script>
+        <script type="text/javascript" src="/js/map.js"></script>
+        <script type="text/javascript" src="/js/jquery.tmpl.min.js"></script>
+        <!--[if lt IE 10]>
+        <script language="Javascript">
+        alert ("It looks like you are using Internet Explorer. To see our site correctly, please use Chrome, Firefox, Opera, or Safari. Sorry about that!")
+        </script>
+        <![endif]-->
+    </head>
+    <body>
+        <div data-role="page" data-theme="b" id="map"> 
+            <div data-role="header">
+                <h1><a href="/" rel="external"><img src="/images/choosenearme-logo.png"></a></h1>
+            </div> 
+            <div data-role="content" >
+             <h2>What is choosenear.me?</h2>
+             <p>Choosenear.me is a location-based platform used to find nearby DonorsChoose projects. Born out of the DonorsChoose Hacking Education contest, choosenear.me aims to integrate foursquare location-data into DonorsChoose projects.</p>
+             <h2>So how does it all work?</h2>
+             <p>It’s simple! After clicking the “Connect to foursquare” link on our main page, you’ll see some of your recent checkins on the left side grouped by cities. Not only is this a great way to find DonorsChoose projects around places you visit, but it’s also a great way to view your foursquare history.</p>
+             <p>But wait, there’s more! Beyond just showing you projects around your checkins, choosenear.me features an advanced recommendation-engine. Using a combination of physic-powers and a bit of luck… hehe just kidding… by analyzing the type of venues you frequent on foursquare, we’re able to come up with a pretty good idea of the type of things you like. From there, if the choosenear.me engine thinks a project would be an amazingly good match, you’ll see the map marker highlighted in gold.</p>
+             <p>Watch for these special gold and foursquare-blue markers when you see a foursquare venue listing that it contains recommended projects!</p>
+             <h2>Who are you?</h2>
+             <p>The Three Musketeers! Athos, Port… hmm yeah… so we are like The Three Engineers!</p>
+             <p>Ok sorry, I’ll stop.</p>
+             <p>Jorge Ortiz, John Paul, and Paul Fryzel</p>
+             <h2>Future plans?</h2>
+             <p>- Yeah, uhmm about that IE support</p>
+             <p>- Complete mobile experience</p>
+             <p>- Document our API</p>
+            </div>
+        <script>
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-5978320-7']);
+          _gaq.push(['_setDomainName', '.choosenear.me']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
+        </script>
+    </body>
+</html>
