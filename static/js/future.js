@@ -15,7 +15,7 @@ CNM.Future = function() {
  */
 CNM.Future.prototype.respond = function(f) {
     if (this.done)
-        f(this.result)
+        f.apply(this, this.result)
     else
         this.waiters.push(f)
 };
@@ -23,14 +23,14 @@ CNM.Future.prototype.respond = function(f) {
 /**
  * Set the value of the future.
  */
-CNM.Future.prototype.update = function(result) {
+CNM.Future.prototype.update = function() {
     if (this.done)
         throw "Future already updated"
     else {
         this.done = true;
-        this.result = result;
+        this.result = arguments;
         for (var i = 0; i < this.waiters.length; i++) {
-            this.waiters[i](result);
+            this.waiters[i].apply(this, this.result);
         }
     }
 };
@@ -41,7 +41,7 @@ CNM.Future.prototype.update = function(result) {
  */
 CNM.Future.prototype.updateFunction = function() {
     var future = this;
-    return function(result) { future.update(result) };
+    return function() { future.update.apply(future, arguments) };
 };
 
 CNM.Future.prototype.foreach = CNM.Future.prototype.respond
@@ -51,7 +51,11 @@ CNM.Future.prototype.foreach = CNM.Future.prototype.respond
  */
 CNM.Future.prototype.map = function(f) {
     var future = new CNM.Future();
-    this.respond(function (result) { future.update(f(result)) });
+    this.respond(function() {
+        var result = f.apply(this, arguments);
+        var args = (result instanceof CNM.Tuple) ? result.args : [result];
+        future.update.apply(future, args);
+    });
     return future;
 };
 
@@ -61,10 +65,10 @@ CNM.Future.prototype.map = function(f) {
  */
 CNM.Future.prototype.flatMap = function(f) {
     var future = new CNM.Future();
-    this.respond(function (result) { 
-        var next = f(result);
-        next.respond(function (nextResult) {
-            future.update(nextResult);
+    this.respond(function() {
+        var next = f.apply(this, arguments);
+        next.respond(function() {
+            future.update.apply(future, arguments);
         });
     });
     return future;
