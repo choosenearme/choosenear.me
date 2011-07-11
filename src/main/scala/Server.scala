@@ -3,12 +3,11 @@ package choosenearme
 import com.mongodb.Mongo
 import com.twitter.finagle.builder.{Http, ServerBuilder}
 import com.twitter.finagle.stats.OstrichStatsReceiver
+import com.twitter.ostrich.admin.RuntimeEnvironment
 import com.twitter.ostrich.admin.config.{AdminServiceConfig, StatsConfig, TimeSeriesCollectorConfig}
-import com.twitter.ostrich.admin.{RuntimeEnvironment}
 import com.twitter.util.FuturePool
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
-import java.util.logging.{Level, Logger}
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB, MongoAddress, MongoHostBase}
 
 object Server {
@@ -35,22 +34,22 @@ object Server {
     val runtime = RuntimeEnvironment(this, Array())
     val ostrich = ostrichAdmin()(runtime)
 
-    val foursquareApi = new FoursquareApi
-    val foursquareAuthApi = new FoursquareAuthenticationApi(config.foursquare)
-    val donorschooseApi = new DonorsChooseApi(config.donorschoose)
-    val twilioApi = config.twilio.map(new TwilioApi(_))
+    val foursquare = new FoursquareApi
+    val foursquareAuth = new FoursquareAuthenticationApi(config.foursquare)
+    val donorschoose = new DonorsChooseApi(config.donorschoose)
+    val twilio = config.twilio.map(new TwilioApi(_))
 
     val restFilter = new RestApiFilter
 
-    val authService = new FoursquareAuthenticationService(foursquareAuthApi, foursquareApi, db)
-    val locationService = new LocationService(donorschooseApi)
-    val userService = new UserService(foursquareApi, db)
-    val checkinsService = new CheckinsService(foursquareApi, db)
-    val checkinService = new CheckinService(donorschooseApi, foursquareApi, twilioApi, db)
-    val categoriesService = new CategoriesService(foursquareApi, db)
+    val authService = new FoursquareAuthenticationService(foursquareAuth, foursquare, db)
+    val locationService = new LocationService(donorschoose)
+    val userService = new UserService(foursquare, db)
+    val checkinsService = new CheckinsService(foursquare, db)
+    val checkinService = new CheckinService(donorschoose, foursquare, twilio, db)
+    val categoriesService = new CategoriesService(foursquare, db)
     val pingService = new PingService
-    val citiesService = new CitiesService(db, foursquareApi)
-    val cityService = new CityService(db, foursquareApi, donorschooseApi)
+    val citiesService = new CitiesService(db, foursquare)
+    val cityService = new CityService(db, foursquare, donorschoose)
 
     val service = restFilter andThen RestApiRouter {
       case "auth" :: _ => authService
