@@ -18,6 +18,7 @@
         <script type="text/javascript" src="/js/future.js"></script>
         <script type="text/javascript" src="/js/api.js"></script>
         <script type="text/javascript" src="/js/geo.js"></script>
+        <script type="text/javascript" src="/js/tuple.js"></script>
         <script type="text/javascript" src="/js/channel.js"></script>
         <script type="text/javascript" src="/js/markerchannels.js"></script>
         <script type="text/javascript" src="/js/utils.js"></script>
@@ -82,7 +83,7 @@
         <script id="info-bubble-template" type="text/x-jquery-tmpl">
             <div class="info-bubble">
                 <div class="info-bubble-inner" style="">
-                    <a class="proposal-link">${title}</a>
+                    <a class="proposal-link" id="proposal-${id}">${title}</a>
                     <div class="percent-funded-wrapper">
                         <div class="percent-funded" style="width:${percentFunded}%;"></div>
                     </div>

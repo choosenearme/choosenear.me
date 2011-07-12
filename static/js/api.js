@@ -4,7 +4,7 @@ CNM.AnonApi = function() { };
 
 CNM.AnonApi.prototype.get = function(endpoint, params) {
     var future = new CNM.Future();
-    $.getJSON(endpoint, params, future.updateFunction());
+    $.getJSON(endpoint, params, function(response) { future.update(response); });
     return future;
 };
 
@@ -29,7 +29,9 @@ CNM.Api.prototype.categories = function() {
 };
 
 CNM.Api.prototype.checkin = function(checkinId) {
-    return this.get("/api/checkin", { "secret" : this.secret, "checkinId" : checkinId });
+    return (
+        this.get("/api/checkin", { "secret" : this.secret, "checkinId" : checkinId })
+            .map(function (response) { return response.proposals.proposals; }));
 };
 
 CNM.Api.prototype.checkins = function() {
@@ -43,7 +45,9 @@ CNM.Api.prototype.cities = function() {
 };
 
 CNM.Api.prototype.city = function(lat, lng) {
-    return this.get("/api/city", { "secret" : this.secret, "latlng" : lat+","+lng });
+    return (
+        this.get("/api/city", { "secret" : this.secret, "latlng" : lat+","+lng })
+            .map(function (json) { return json.response.checkins }));
 };
 
 CNM.Api.prototype.user = function() {

@@ -1,14 +1,21 @@
 var CNM = CNM || {};
 
 CNM.Map = function(elem, defaultPosition) {
-    this.currentPosition = defaultPosition;
     this.markers = [];
     var options = {
         zoom: 12,
-        center: this.currentPosition,
+        center: defaultPosition,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     this.map = new google.maps.Map(elem, options);
+
+    this.currentPositionMarker = new google.maps.Marker({
+        position: defaultPosition,
+        title: "This is where you are",
+        draggable: true,
+        map: this.map
+    });
+    this.currentPositionChannels = new CNM.MarkerChannels(this.currentPositionMarker);
 };
 
 CNM.Map.prototype.clearMarkers = function() {
@@ -27,30 +34,15 @@ CNM.Map.prototype.addMarker = function(properties) {
     return new CNM.MarkerChannels(marker);
 };
 
-CNM.Map.prototype.addCurrentPositionMarker = function(latlng) {
-    // We don't reuse addMarker because we don't want
-    // this marker to be cleared when we clear the proposals.
-    var marker = new google.maps.Marker({
-        position: latlng,
-        title: "This is where you are",
-        draggable: true,
-        map: this.map
-    });
-    return new CNM.MarkerChannels(marker);
+CNM.Map.prototype.setCurrentPosition = function(latlng) {
+    this.map.setCenter(latlng);
+    this.currentPositionMarker.setPosition(latlng);
 };
 
-CNM.Map.prototype.addDCMarker = function(latlng, title) {
+CNM.Map.prototype.addProposalMarker = function(latlng, title, icon) {
     return this.addMarker({
         position: latlng,
         title: title,
-        icon: new google.maps.MarkerImage("/images/marker.png")
-    });
-};
-
-CNM.Map.prototype.addHighlightedDCMarker = function(latlng, title) {
-    return this.addMarker({
-        position: latlng,
-        title: title,
-        icon: new google.maps.MarkerImage("/images/recommended-marker.png")
+        icon: icon
     });
 };
