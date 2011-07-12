@@ -4,7 +4,7 @@ $(function() {
     if (supports_html5_storage()) {
         if (auth) {
             window.localStorage['secret'] = auth;
-            window.location = '/index2.html';
+            window.location = '/';
         } else {
             auth = window.localStorage['secret'];
         }
@@ -79,6 +79,10 @@ $(function() {
      });
 
     if (auth) {
+        $("#connect4sq").html("LOG OUT").attr("href", "/").click(function() {
+            window.localStorage.removeItem('secret');
+        });
+
         var cityChanges = new CNM.Channel();
 
         api.cities().foreach(function (cities) {
