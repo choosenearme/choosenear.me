@@ -19,6 +19,13 @@ ul.nav{float:right;margin-right:5px;}
 .nav li a.ui-link:first-child:after{content:'\00b7';margin-left:8px;}
 .nav li:last-child a.ui-link:after{content:'';}
 
+ul.share{float:left;margin-left:5px;}
+.share li{float:right;display:block;line-height:40px;}
+.share li a.ui-link{color:white;margin-right:10px;text-decoration:none;font-size:14px;}
+.share li a.ui-link:first-child:after{content:'\00b7';margin-right:8px;}
+.share li iframe{color:white;margin-right:10px;text-decoration:none;font-size:14px;}
+.share li:last-child a.ui-link:after{content:'';}
+
 .proposal-link{color:#0162AA;cursor:pointer;font-weight:bold;}
 .proposal-link:hover{color:#61A1D7;}
 .box_round {
