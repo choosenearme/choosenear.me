@@ -23,8 +23,8 @@ class CheckinService(donorschoose: DonorsChooseApi,
     val id = request.params.required[ObjectId]("checkinId")
 
     for {
-      user <- db.fetchOne(User.where(_.secret eqs secret))
-      checkin <- db.fetchOne(Checkin.where(_.userId eqs user.foursquareId.value).and(_._id eqs id))
+      userFoursquareId <- db.fetchOne(User.where(_.secret eqs secret).select(_.foursquareId))
+      checkin <- db.fetchOne(Checkin.where(_.userId eqs userFoursquareId).and(_._id eqs id))
       val latlng = checkin.latlng.value
       val checkinCategories = checkin.categories.value
       val matchingSubjects = checkinCategories.flatMap(category => CategoryUtil.matchingMap.get(category)).flatten
