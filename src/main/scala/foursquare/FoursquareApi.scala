@@ -1,7 +1,7 @@
 package choosenearme
 
 import com.twitter.util.Future
-import net.liftweb.json.DefaultFormats
+import net.liftweb.json.{DefaultFormats, JValue}
 import org.scala_tools.time.Imports._
 
 case class SelfApiResponse(response: SelfApiResponseBody)
@@ -66,6 +66,16 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
       val pages = (0 to (numCheckins / limit)).toList
       checkinPages <- Future.collect(pages.map(checkinsForPage))
     } yield checkinPages.flatten.toSet.toList
+  }
+
+  def reply(checkinId: String): Future[JValue] = {
+    val endpoint = "/v2/checkins/" + checkinId + "/reply"
+    val params = Map(
+      "oauth_token" -> AccessToken,
+      "v" -> "20120701",
+      "text" -> "Boom dot com!",
+      "url" -> "https://choosenear.me/")
+    post(endpoint, params)
   }
 
   private def checkinsForPage(page: Int): Future[List[CheckinDetail]] = {

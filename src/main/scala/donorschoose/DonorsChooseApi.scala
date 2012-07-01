@@ -3,6 +3,7 @@ package choosenearme
 import com.twitter.util.Future
 import java.text.SimpleDateFormat
 import java.util.Date
+import net.liftweb.json.JValue
 
 case class DonorsChooseResponse(proposals: List[DonorsChooseProposal])
 case class DonorsChooseProposal(id: String, schoolName: String, latitude: String, longitude: String, subject: DonorsChooseSubject)
@@ -11,6 +12,15 @@ case class DonorsChooseSubject(name: String)
 class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.donorschoose.org") {
   implicit val formats = new net.liftweb.json.DefaultFormats {
     override protected def dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+  }
+
+  def projectInfo(projectId: String): Future[JValue] = {
+    val endpoint = "/common/json_feed.html"
+    val params =
+      Map(
+        "APIKey" -> config.key,
+        "id" -> projectId)
+    get(endpoint, params)
   }
 
   def nearKeyword(geo: LatLong, keyword: String) = {

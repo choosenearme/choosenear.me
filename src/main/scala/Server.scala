@@ -9,6 +9,7 @@ import com.twitter.ostrich.admin.config.{StatsConfig, TimeSeriesCollectorConfig}
 import com.twitter.util.FuturePool
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
+import java.util.logging.{Level, Logger}
 import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB, MongoAddress, MongoHostBase}
 
 object Server {
@@ -20,8 +21,8 @@ object Server {
     val address = MongoAddress(new MongoHostBase { def mongo = _mongo }, config.mongo.name)
     MongoDB.defineDb(DefaultMongoIdentifier, address)
 
-    // val httpLogger = Logger.getLogger("http")
-    // httpLogger.setLevel(Level.ALL)
+    val httpLogger = Logger.getLogger("")
+    httpLogger.setLevel(Level.ALL)
 
     val mongoPool = Executors.newFixedThreadPool(4)
     val db = new MongoDb(FuturePool(mongoPool))
@@ -40,8 +41,6 @@ object Server {
     val donorschoose = new DonorsChooseApi(config.donorschoose)
     val twilio = config.twilio.map(new TwilioApi(_))
 
-    val restFilter = new RestApiFilter
-
     val authService = new FoursquareAuthenticationService(foursquareAuth, foursquare, db)
     val locationService = new LocationService(donorschoose)
     val userService = new UserService(foursquare, db)
@@ -52,6 +51,8 @@ object Server {
     val citiesService = new CitiesService(db, foursquare)
     val cityService = new CityService(db, foursquare, donorschoose)
 
+    val restFilter = new RestApiFilter
+
     val service = restFilter andThen RestApiRouter {
       case "auth" :: _ => authService
       case "categories" :: Nil => categoriesService
@@ -60,6 +61,7 @@ object Server {
       case "cities" :: Nil => citiesService
       case "city" :: Nil => cityService
       case "location" :: Nil => locationService
+      case "project" :: id :: Nil => new ProjectService(donorschoose, id)
       case "ping" :: Nil => pingService
       case "user" :: Nil => userService
     }
@@ -70,6 +72,7 @@ object Server {
         .codec(Http.get)
         .bindTo(new InetSocketAddress(8080))
         .reportTo(new OstrichStatsReceiver)
+        .logger(httpLogger)
         .build(service))
   }
 }

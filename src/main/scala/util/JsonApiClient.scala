@@ -6,7 +6,7 @@ import com.twitter.finagle.stats.OstrichStatsReceiver
 import com.twitter.util.{Duration, Future}
 import java.net.URLEncoder.encode
 import java.util.concurrent.TimeUnit
-import java.util.logging.Logger
+import java.util.logging.{Level, Logger}
 import net.liftweb.json.JsonParser
 import net.liftweb.json.JsonAST.JValue
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
@@ -15,12 +15,16 @@ import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
 class JsonApiClient(host: String, port: Int = 80) {
+  val logger = Logger.getLogger(host)
+  logger.setLevel(Level.ALL)
+
   def clientBuilder =
     (ClientBuilder()
       .codec(Http.get)
       .tcpConnectTimeout(Duration(1, TimeUnit.SECONDS))
       .hosts(host + ":" + port)
       .hostConnectionLimit(10)
+      .logger(logger)
       .reportTo(new OstrichStatsReceiver))
 
   val client = clientBuilder.build()
