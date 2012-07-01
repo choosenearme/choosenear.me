@@ -27,7 +27,7 @@ class FoursquareApi {
 }
 
 class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api.foursquare.com", 443) {
-  override def clientBuilder = super.clientBuilder.tls
+  override def clientBuilder = super.clientBuilder.tlsWithoutValidation
 
   implicit val formats = DefaultFormats
 

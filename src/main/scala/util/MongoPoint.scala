@@ -14,11 +14,11 @@ class MongoPoint[OwnerType <: Record[OwnerType]](rec: OwnerType) extends Field[L
 
   def owner = rec
 
-  override def toForm = error("Unimplemented")
-  override def asJValue = error("Unimplemented")
-  override def setFromJValue(jvalue: JValue) = error("Unimplemented")
-  override def defaultValue = error("Unimplemented")
-  override def setFromString(in: String) = error("Unimplemented")
+  override def toForm = sys.error("Unimplemented")
+  override def asJValue = sys.error("Unimplemented")
+  override def setFromJValue(jvalue: JValue) = sys.error("Unimplemented")
+  override def defaultValue = sys.error("Unimplemented")
+  override def setFromString(in: String) = sys.error("Unimplemented")
 
   override def defaultValueBox = Empty
 

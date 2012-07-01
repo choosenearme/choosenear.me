@@ -4,7 +4,7 @@ import com.twitter.util.Future
 import net.liftweb.json.JsonAST.{JObject, JField, JString}
 
 class FoursquareAuthenticationApi(val config: FoursquareConfig) extends JsonApiClient("foursquare.com", 443) {
-  override def clientBuilder = super.clientBuilder.tls
+  override def clientBuilder = super.clientBuilder.tlsWithoutValidation
 
   def auth(code: String): Future[String] = {
     val endpoint = "/oauth2/access_token"

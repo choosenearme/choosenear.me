@@ -1,10 +1,11 @@
 package choosenearme
 
 import com.mongodb.Mongo
-import com.twitter.finagle.builder.{Http, ServerBuilder}
+import com.twitter.finagle.builder.ServerBuilder
+import com.twitter.finagle.http.Http
 import com.twitter.finagle.stats.OstrichStatsReceiver
-import com.twitter.ostrich.admin.RuntimeEnvironment
-import com.twitter.ostrich.admin.config.{AdminServiceConfig, StatsConfig, TimeSeriesCollectorConfig}
+import com.twitter.ostrich.admin.{AdminServiceFactory, StatsFactory, TimeSeriesCollectorFactory, RuntimeEnvironment}
+import com.twitter.ostrich.admin.config.{StatsConfig, TimeSeriesCollectorConfig}
 import com.twitter.util.FuturePool
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
@@ -25,14 +26,14 @@ object Server {
     val mongoPool = Executors.newFixedThreadPool(4)
     val db = new MongoDb(FuturePool(mongoPool))
 
-    val ostrichAdmin = new AdminServiceConfig {
-      httpPort = 22557
-      statsNodes = new StatsConfig {
-        reporters = new TimeSeriesCollectorConfig
-      }
-    }
+    val ostrichAdmin =
+      AdminServiceFactory(
+        httpPort = 2257,
+        statsNodes = List(StatsFactory(
+          reporters = List(TimeSeriesCollectorFactory()))))
+
     val runtime = RuntimeEnvironment(this, Array())
-    val ostrich = ostrichAdmin()(runtime)
+    val ostrich = ostrichAdmin(runtime)
 
     val foursquare = new FoursquareApi
     val foursquareAuth = new FoursquareAuthenticationApi(config.foursquare)
@@ -65,7 +66,8 @@ object Server {
 
     val server = 
       (ServerBuilder()
-        .codec(Http)
+        .name("choosenearme")
+        .codec(Http.get)
         .bindTo(new InetSocketAddress(8080))
         .reportTo(new OstrichStatsReceiver)
         .build(service))

@@ -5,7 +5,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
 class TwilioApi(config: TwilioConfig) extends JsonApiClient("api.twilio.com", 443) {
-  override def clientBuilder = super.clientBuilder.tls
+  override def clientBuilder = super.clientBuilder.tlsWithoutValidation
 
   override def headers = super.headers ++ Map(
     HttpHeaders.Names.AUTHORIZATION ->

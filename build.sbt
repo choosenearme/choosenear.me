@@ -2,22 +2,23 @@ name := "choosenearme"
 
 version := "1.0"
 
-scalaVersion := "2.8.1"
+scalaVersion := "2.9.2"
 
 scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked")
 
 libraryDependencies ++= Seq(
-  "com.twitter" % "finagle-core" % "1.5.3",
-  "com.twitter" % "finagle-ostrich4" % "1.5.3",
+  "com.twitter" % "finagle-core" % "5.3.0",
+  "com.twitter" % "finagle-http" % "5.3.0",
+  "com.twitter" % "finagle-ostrich4" % "5.3.0",
   "com.twitter" % "util-eval" % "1.8.17",
-  "org.scala-tools.time" %% "time" % "0.4",
-  "org.scalaj" %% "scalaj-collection" % "1.1",
-  "org.scalaj" %% "scalaj-http" % "0.2.7",
-  "net.liftweb" %% "lift-json" % "2.4-M2",
-  "net.liftweb" %% "lift-mongodb-record" % "2.4-M2",
-  "com.foursquare" %% "rogue" % "1.0.13" intransitive())
+  "org.scala-tools.time" % "time_2.9.1" % "0.5",
+  "org.scalaj" % "scalaj-collection_2.9.1" % "1.2",
+  "org.scalaj" % "scalaj-http_2.9.1" % "0.3.1",
+  "net.liftweb" % "lift-json_2.9.1" % "2.4",
+  "net.liftweb" % "lift-mongodb-record_2.9.1" % "2.4",
+  "com.foursquare" % "rogue_2.9.1" % "1.1.8" intransitive())
 
 resolvers ++= Seq(
   "twitter.com" at "http://maven.twttr.com/")
