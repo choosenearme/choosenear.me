@@ -18,6 +18,10 @@ CNM.AnonApi.prototype.ping = function() {
     return this.get("/api/ping", {});
 };
 
+CNM.AnonApi.prototype.project = function(projectId) {
+    return this.get("/api/project/" + projectId, {});
+};
+
 CNM.Api = function(secret) {
     this.secret = secret;
 };
