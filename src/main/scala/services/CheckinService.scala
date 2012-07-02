@@ -12,10 +12,12 @@ case class CheckinPost(checkin: CheckinDetail, user: CheckinPostUserDetail)
 case class CheckinPostUserDetail(id: String)
 // case class CheckinPostCheckinDetail(id: String, venue: Option[VenueDetail])
 
-class CheckinService(donorschoose: DonorsChooseApi,
-                     foursquare: FoursquareApi,
-                     twilio: Option[TwilioApi],
-                     db: Db) extends RestApiService {
+class CheckinService(
+    donorschoose: DonorsChooseApi,
+    foursquare: FoursquareApi,
+    twilio: Option[TwilioApi],
+    db: Db
+) extends RestApiService {
   implicit val formats = DefaultFormats
 
   override def get(request: RestApiRequest) = {
@@ -26,9 +28,8 @@ class CheckinService(donorschoose: DonorsChooseApi,
       userFoursquareId <- db.fetchOne(User.where(_.secret eqs secret).select(_.foursquareId))
       checkin <- db.fetchOne(Checkin.where(_.userId eqs userFoursquareId).and(_._id eqs id))
       val latlng = checkin.latlng.value
-      val checkinCategories = checkin.categories.value
-      val matchingSubjects = checkinCategories.flatMap(category => CategoryUtil.matchingMap.get(category)).flatten
-      val responses = donorschoose.near(latlng) :: matchingSubjects.map(subject => donorschoose.nearKeyword(latlng, subject))
+      val matchingSubjects = CategoryUtil.subjectsForCategories(checkin.categories.value)
+      val responses = donorschoose.near(latlng) +: matchingSubjects.map(subject => donorschoose.nearKeyword(latlng, subject))
       jsonResponses <- Future.collect(responses)
     } yield {
       val proposals = jsonResponses.flatMap(_.extract[DonorsChooseResponse].proposals)
@@ -52,16 +53,36 @@ class CheckinService(donorschoose: DonorsChooseApi,
 
     for {
       user <- db.fetchOne(User.where(_.foursquareId eqs userId))
-      record <- Checkin.fromCheckinDetail(user)(response.checkin)
-      _ <- db.save(record)
-      // val location = response.checkin.venue.location
-      // val latlng = LatLong(location.lat, location.lng)
+      checkin <- Checkin.fromCheckinDetail(user)(response.checkin)
       // jsonResponse <- donorschoose.near(latlng)
       // val _ = println(Printer.pretty(JsonAST.render(jsonResponse)))
       // val _ = println("")
       // val proposals = jsonResponse.extract[DonorsChooseResponse].proposals
     } {
-      // val sorted = proposals.sortBy(p => LatLong(p.latitude.toDouble, p.longitude.toDouble))(LatLongUtil.near(latlng))
+      db.save(checkin)
+      val subjects = CategoryUtil.subjectsForCategories(checkin.categories.value)
+      for {
+        venue <- response.checkin.venue
+        val location = venue.location
+        val latlng = LatLong(location.lat, location.lng)
+        jsonResponses <- Future.collect(subjects.map(subject => donorschoose.nearKeyword(latlng, subject)))
+      } {
+        val proposals = jsonResponses.flatMap(_.extract[DonorsChooseResponse].proposals)
+        val matchingProposals = proposals.filter(p => subjects.contains(p.subject.name))
+        val ord = LatLongUtil.near(latlng)
+        val sortedProposals = proposals.sortBy(p => LatLong(p.latitude.toDouble, p.longitude.toDouble))(ord)
+        sortedProposals.headOption.foreach(proposal => {
+          val authedFoursquare = foursquare.authenticateUser(user)
+          val text = ""
+          val url = "https://choosenear.me/"
+
+          // authedFoursquare.reply(
+          //   checkinId = checkin.id.toString,
+          //   text = text,
+          //   url = url)
+        })
+      }
+
       // println(sorted)
       // println("")
       // t.sms(user.phone.value, "Hi " + user.firstName + ", the nearest DonorsChoose school is " + proposal.schoolName)

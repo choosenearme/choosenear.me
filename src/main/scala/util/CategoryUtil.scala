@@ -40,4 +40,7 @@ object CategoryUtil {
       "Other" -> List())
 
   val matchingMap = reverseMatchingMap.invert
+
+  def subjectsForCategories(categories: Seq[String]): Seq[String] =
+    categories.flatMap(matchingMap.get).flatten
 }

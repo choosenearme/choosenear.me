@@ -68,13 +68,13 @@ class AuthenticatedFoursquareApi(AccessToken: String) extends JsonApiClient("api
     } yield checkinPages.flatten.toSet.toList
   }
 
-  def reply(checkinId: String): Future[JValue] = {
+  def reply(checkinId: String, text: String, url: String): Future[JValue] = {
     val endpoint = "/v2/checkins/" + checkinId + "/reply"
     val params = Map(
       "oauth_token" -> AccessToken,
       "v" -> "20120701",
-      "text" -> "Boom dot com!",
-      "url" -> "https://choosenear.me/")
+      "text" -> text,
+      "url" -> url)
     post(endpoint, params)
   }
 
