@@ -55,6 +55,8 @@ $(function() {
                     new google.maps.MarkerImage("/images/marker.png");
 
             var clicks = map.addProposalMarker(latlng, proposal.title, icon).clicks();
+            proposal.secureImageURL = proposal.imageURL.replace("http://cdn.donorschoose.net/",
+                                                                "https://choosenear.me/cdn/");
             (clicks
                 .map(function(marker) { return new CNM.Tuple(marker, proposal); })
                 .pipeTo(markerClicks));
@@ -76,6 +78,8 @@ $(function() {
             $("#proposal-info").html($("#more-information-template").tmpl(proposal));
             $.mobile.changePage("#more-information");
         });
+        proposal.secureImageURL = proposal.imageURL.replace("http://cdn.donorschoose.net/",
+                                                           "https://choosenear.me/cdn/");
      });
 
     if (auth) {
