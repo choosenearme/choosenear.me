@@ -30,14 +30,12 @@ object ImageProxyServer {
       }
     }
 
-    val proxy = new ProxyService(Future.value(client))
-
     val server = 
       (ServerBuilder()
         .name("choosenearme-image-proxy")
         .codec(Http.get)
         .bindTo(new InetSocketAddress(8081))
         .reportTo(new OstrichStatsReceiver)
-        .build(fixHost andThen proxy))
+        .build(fixHost andThen client))
   }
 }
