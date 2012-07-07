@@ -25,6 +25,7 @@ object ImageProxyServer {
     val fixHost = new HttpFilter[HttpRequest, HttpResponse] {
       def apply(request: HttpRequest, service: Service[HttpRequest, HttpResponse]): Future[HttpResponse] = {
         request.setHeader("Host", "cdn.donorschoose.net")
+        request.setUri(request.getUri.stripPrefix("/cdn"))
         service(request)
       }
     }
