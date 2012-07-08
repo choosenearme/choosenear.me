@@ -54,10 +54,6 @@ class CheckinService(
     for {
       user <- db.fetchOne(User.where(_.foursquareId eqs userId))
       checkin <- Checkin.fromCheckinDetail(user)(response.checkin)
-      // jsonResponse <- donorschoose.near(latlng)
-      // val _ = println(Printer.pretty(JsonAST.render(jsonResponse)))
-      // val _ = println("")
-      // val proposals = jsonResponse.extract[DonorsChooseResponse].proposals
     } {
       db.save(checkin)
       val subjects = CategoryUtil.subjectsForCategories(checkin.categories.value)
@@ -73,19 +69,15 @@ class CheckinService(
         val sortedProposals = proposals.sortBy(p => LatLong(p.latitude.toDouble, p.longitude.toDouble))(ord)
         sortedProposals.headOption.foreach(proposal => {
           val authedFoursquare = foursquare.authenticateUser(user)
-          val text = ""
-          val url = "https://choosenear.me/"
+          val text = proposal.title + " is nearby at " + proposal.schoolName + "! Tap for more information."
+          val url = "https://choosenear.me/proposals/#!" + proposal.id
 
-          // authedFoursquare.reply(
-          //   checkinId = checkin.id.toString,
-          //   text = text,
-          //   url = url)
+          authedFoursquare.reply(
+            checkinId = checkin.id.toString,
+            text = text,
+            url = url)
         })
       }
-
-      // println(sorted)
-      // println("")
-      // t.sms(user.phone.value, "Hi " + user.firstName + ", the nearest DonorsChoose school is " + proposal.schoolName)
     }
 
     Future.value(new RestApiResponse(JObject(List())))

@@ -6,7 +6,7 @@ import java.util.Date
 import net.liftweb.json.JValue
 
 case class DonorsChooseResponse(proposals: List[DonorsChooseProposal])
-case class DonorsChooseProposal(id: String, schoolName: String, latitude: String, longitude: String, subject: DonorsChooseSubject)
+case class DonorsChooseProposal(id: String, title: String, schoolName: String, latitude: String, longitude: String, subject: DonorsChooseSubject)
 case class DonorsChooseSubject(name: String)
 
 class DonorsChooseApi(config: DonorsChooseConfig) extends JsonApiClient("api.donorschoose.org") {
