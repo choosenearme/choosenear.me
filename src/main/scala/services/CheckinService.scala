@@ -6,6 +6,7 @@ import net.liftweb.json.Extraction.decompose
 import net.liftweb.json.JsonAST.{JValue, JObject, JField, JString, JBool}
 import net.liftweb.json.{Printer, JsonAST, JsonParser}
 import org.bson.types.ObjectId
+import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import org.jboss.netty.util.CharsetUtil.UTF_8
 
 case class CheckinPost(checkin: CheckinDetail, user: CheckinPostUserDetail)
@@ -47,18 +48,22 @@ class CheckinService(
   }
 
   override def post(request: RestApiRequest) = {
-    val json = JsonParser.parse(request.underlying.getContent.toString(UTF_8))
-    val response = json.extract[CheckinPost]
-    val userId = response.user.id
+    val content = request.underlying.getContent.toString(UTF_8)
+    val decoder = new QueryStringDecoder("/?" + content)
+    val params = RestApiParameters.fromDecoder(decoder)
+    val checkinContent = params.required[String]("checkin")
+    val json = JsonParser.parse(checkinContent)
+    val checkinDetail = json.extract[CheckinDetail]
 
     for {
+      userId <- checkinDetail.user.map(_.id)
       user <- db.fetchOne(User.where(_.foursquareId eqs userId))
-      checkin <- Checkin.fromCheckinDetail(user)(response.checkin)
+      checkin <- Checkin.fromCheckinDetail(user)(checkinDetail)
     } {
       db.save(checkin)
       val subjects = CategoryUtil.subjectsForCategories(checkin.categories.value)
       for {
-        venue <- response.checkin.venue
+        venue <- checkinDetail.venue
         val location = venue.location
         val latlng = LatLong(location.lat, location.lng)
         jsonResponses <- Future.collect(subjects.map(subject => donorschoose.nearKeyword(latlng, subject)))

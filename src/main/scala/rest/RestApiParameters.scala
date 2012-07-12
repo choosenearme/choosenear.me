@@ -1,6 +1,8 @@
 package choosenearme
 
+import org.jboss.netty.handler.codec.http.QueryStringDecoder
 import scala.collection.Map
+import scalaj.collection.Implicits._
 
 class MissingParameterException(parameterName: String)
   extends RestApiException("Missing required parameter: " + parameterName)
@@ -18,4 +20,9 @@ class RestApiParameters(val all: Map[String, Seq[String]]) {
     val value = all.getOrElse(name, throw new MissingParameterException(name)).mkString(",")
     parse(value).getOrElse(throw new InvalidParameterException(name, value))
   }
+}
+
+object RestApiParameters {
+  def fromDecoder(decoder: QueryStringDecoder): RestApiParameters =
+    new RestApiParameters(Map() ++ decoder.getParameters.asScala.mapValues(_.asScala))
 }

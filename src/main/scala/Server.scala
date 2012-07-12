@@ -14,8 +14,8 @@ import net.liftweb.mongodb.{DefaultMongoIdentifier, MongoDB, MongoAddress, Mongo
 
 object Server {
   def main(args: Array[String]): Unit = {
-    val config =
-      (Option(System.getProperty("choosenearme.config")).map(Config.fromFile).getOrElse(DevConfig))
+    val configName = args.lift.apply(0).orElse(Option(System.getProperty("choosenearme.config")))
+    val config = configName.map(Config.fromFile).getOrElse(DevConfig)
 
     val _mongo = new Mongo
     val address = MongoAddress(new MongoHostBase { def mongo = _mongo }, config.mongo.name)

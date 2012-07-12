@@ -4,7 +4,7 @@ import com.twitter.finagle.Service
 import com.twitter.util.Future
 import net.liftweb.json.{JsonAST, Printer}
 import org.jboss.netty.buffer.ChannelBuffers.copiedBuffer
-import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, DefaultHttpResponse}
+import org.jboss.netty.handler.codec.http.{HttpRequest, HttpResponse, HttpResponseStatus, DefaultHttpResponse}
 import org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1
 import org.jboss.netty.handler.codec.http.HttpResponseStatus.OK
 import org.jboss.netty.util.CharsetUtil.UTF_8
@@ -25,6 +25,9 @@ class RestApiFilter extends HttpFilter[RestApiRequest, RestApiResponse] {
       val response = new DefaultHttpResponse(HTTP_1_1, status)
       response.setContent(copiedBuffer(msg, UTF_8))
       ex.postProcess(response)
+      response
+    } handle { case ex: Exception =>
+      val response = new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR)
       response
     }
   }
