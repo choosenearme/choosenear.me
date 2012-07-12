@@ -74,7 +74,7 @@ class CheckinService(
         val sortedProposals = proposals.sortBy(p => LatLong(p.latitude.toDouble, p.longitude.toDouble))(ord)
         sortedProposals.headOption.foreach(proposal => {
           val authedFoursquare = foursquare.authenticateUser(user)
-          val text = proposal.title + " is nearby at " + proposal.schoolName + "! Tap for more information."
+          val text = """Donate $5 to "%s" @ %s! Tap for more info.""".format(proposal.title, proposal.schoolName)
           val url = "https://choosenear.me/proposals/#!" + proposal.id
 
           authedFoursquare.reply(
