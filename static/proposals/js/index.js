@@ -16,7 +16,7 @@ $(document).ready( function() {
     });
     $("h2").text(proposal.title);
     $("p").text(proposal.shortDescription);
-    $(".webview-button").attr('href', donationURL);
+    $(".proposal-webview-button").attr('href', donationURL);
   });
 
   function getProposalId(){
